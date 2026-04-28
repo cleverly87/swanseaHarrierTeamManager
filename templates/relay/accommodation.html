@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Accommodation – Welsh Castles Relay{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1 class="page-title">🏨 Accommodation</h1>
+  <p class="page-subtitle">Hotel bookings for athletes and support staff</p>
+</div>
+
+{% if hotels %}
+{% for hotel in hotels %}
+<div class="hotel-card">
+  <div class="hotel-header">
+    <h2 class="hotel-name">{{ hotel.name }}</h2>
+    <div class="hotel-dates">
+      {% if hotel.check_in_date %}Check-in: <strong>{{ hotel.check_in_date }}</strong>{% endif %}
+      {% if hotel.check_out_date %}&nbsp;→&nbsp;Check-out: <strong>{{ hotel.check_out_date }}</strong>{% endif %}
+    </div>
+  </div>
+  <address class="hotel-address">{{ hotel.address }}</address>
+  {% if hotel.phone %}<p class="hotel-phone">📞 {{ hotel.phone }}</p>{% endif %}
+
+  {% if hotel.rooms.all %}
+  <div class="rooms-table-wrapper">
+    <table class="rooms-table">
+      <thead>
+        <tr>
+          <th>Room</th>
+          <th>Type</th>
+          <th>Capacity</th>
+          <th>Occupants</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for room in hotel.rooms.all %}
+        <tr>
+          <td>{{ room.room_identifier }}</td>
+          <td>{{ room.get_room_type_display }}</td>
+          <td>{{ room.capacity }}</td>
+          <td>
+            {% for booking in room.bookings.all %}
+              {% if booking.athlete %}
+              <span class="occupant athlete-tag">{{ booking.athlete.full_name }}</span>
+              {% elif booking.support_staff %}
+              <span class="occupant staff-tag">{{ booking.support_staff.full_name }}</span>
+              {% endif %}
+            {% empty %}
+            <span class="tba">Empty</span>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="no-data">No rooms configured for this hotel yet.</p>
+  {% endif %}
+
+  {% if hotel.notes %}
+  <p class="hotel-notes">📝 {{ hotel.notes }}</p>
+  {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<p class="no-data">No accommodation added yet. <a href="/admin/relay/hotel/add/">Add hotels in the admin.</a></p>
+{% endif %}
+{% endblock %}

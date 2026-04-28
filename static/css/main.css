@@ -1,0 +1,553 @@
+/* ============================================================
+   Welsh Castles Relay – Swansea Harriers
+   Main stylesheet
+   ============================================================ */
+
+/* --- Variables --- */
+:root {
+  --red:        #c0392b;
+  --red-dark:   #962d22;
+  --green:      #27ae60;
+  --green-dark: #1e8449;
+  --dragon-red: #b22222;
+  --navy:       #1a2a4a;
+  --navy-light: #2c3e6b;
+  --gold:       #d4a017;
+  --white:      #ffffff;
+  --off-white:  #f4f6f9;
+  --light-grey: #e8ecf0;
+  --mid-grey:   #8e9db5;
+  --text:       #1c2833;
+  --radius:     8px;
+  --shadow:     0 2px 8px rgba(0,0,0,0.1);
+  --shadow-lg:  0 4px 20px rgba(0,0,0,0.15);
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+a { color: var(--navy); text-decoration: none; }
+a:hover { color: var(--dragon-red); }
+img { max-width: 100%; }
+
+/* --- Layout --- */
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+.main-content {
+  flex: 1;
+  padding: 2rem 0 3rem;
+}
+
+/* --- Header --- */
+.site-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: var(--white);
+  padding: 0.75rem 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.brand-dragon { font-size: 2rem; }
+.brand-title {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+.brand-sub {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--light-grey);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.nav-link {
+  color: var(--light-grey);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-link:hover, .nav-link.active {
+  background: rgba(255,255,255,0.15);
+  color: var(--white);
+}
+.nav-admin {
+  background: rgba(212,160,23,0.2);
+  color: var(--gold);
+  border: 1px solid rgba(212,160,23,0.35);
+}
+.nav-admin:hover {
+  background: rgba(212,160,23,0.35);
+  color: var(--gold);
+}
+
+/* --- Footer --- */
+.site-footer {
+  background: var(--navy);
+  color: var(--mid-grey);
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.85rem;
+}
+
+/* --- Hero banner --- */
+.page-hero {
+  background: linear-gradient(135deg, var(--dragon-red) 0%, var(--navy) 100%);
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+.page-subtitle {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 1.5rem;
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.stat { text-align: center; }
+.stat-value {
+  display: block;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+.stat-label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.7);
+}
+
+/* --- Day heading --- */
+.relay-day { margin-bottom: 3rem; }
+.day-heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.day-badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.day-1 { background: var(--dragon-red); color: var(--white); }
+.day-2 { background: var(--navy); color: var(--white); }
+
+/* --- Stage grid & cards --- */
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.1rem;
+}
+.stage-card {
+  background: var(--white);
+  border: 1px solid var(--light-grey);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  box-shadow: var(--shadow);
+  display: block;
+  transition: transform 0.15s, box-shadow 0.15s;
+  color: var(--text);
+}
+.stage-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  color: var(--text);
+}
+.stage-mountain {
+  border-left: 4px solid var(--dragon-red);
+}
+.stage-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.stage-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--mid-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.stage-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--navy);
+}
+.badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 20px;
+}
+.badge-mountain { background: #fde9e9; color: var(--dragon-red); }
+.badge-road { background: #e9f7ef; color: var(--green-dark); }
+.stage-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.meta-item {
+  font-size: 0.8rem;
+  color: var(--mid-grey);
+  background: var(--off-white);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+.stage-location {
+  font-size: 0.8rem;
+  color: var(--navy-light);
+  margin-bottom: 0.35rem;
+}
+.athlete-assigned {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+.athlete-tba {
+  font-size: 0.8rem;
+  color: var(--mid-grey);
+  font-style: italic;
+}
+
+/* --- Stage detail page --- */
+.breadcrumb {
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+}
+.stage-detail-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+.bg-mountain {
+  background: linear-gradient(135deg, var(--dragon-red) 0%, var(--navy) 100%);
+}
+.stage-detail-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+.stage-num-large {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.stage-detail-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+.stage-detail-distance {
+  font-size: 1.1rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.detail-card {
+  background: var(--white);
+  border: 1px solid var(--light-grey);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+.card-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--light-grey);
+  padding-bottom: 0.4rem;
+}
+.info-table { width: 100%; border-collapse: collapse; }
+.info-table th, .info-table td { padding: 0.4rem 0; text-align: left; }
+.info-table th { width: 50%; font-size: 0.85rem; color: var(--mid-grey); font-weight: 600; }
+.info-table td { font-size: 0.9rem; font-weight: 600; }
+.tba { color: var(--mid-grey); font-style: italic; }
+.athlete-name { font-size: 1.2rem; font-weight: 700; color: var(--green-dark); }
+.location-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.location-address { font-size: 0.9rem; color: #555; line-height: 1.5; }
+.description-body { font-size: 0.95rem; line-height: 1.7; }
+.stage-nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.btn {
+  display: inline-block;
+  padding: 0.55rem 1.3rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+.btn-primary { background: var(--navy); color: var(--white); }
+.btn-primary:hover { background: var(--navy-light); color: var(--white); }
+.btn-secondary { background: var(--light-grey); color: var(--navy); }
+.btn-secondary:hover { background: #d0d7e0; color: var(--navy); }
+
+/* --- Team roster --- */
+.roster-table-wrapper { overflow-x: auto; }
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.roster-table th {
+  background: var(--navy);
+  color: var(--white);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.roster-table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--light-grey);
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+.roster-table tr:last-child td { border-bottom: none; }
+.roster-table tr:nth-child(even) td { background: var(--off-white); }
+.roster-num { color: var(--mid-grey); font-weight: 700; width: 40px; }
+.roster-name { font-weight: 600; }
+.roster-stages { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.stage-pill {
+  display: inline-block;
+  background: var(--navy);
+  color: var(--white);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.stage-pill:hover { background: var(--dragon-red); color: var(--white); }
+
+/* --- Accommodation --- */
+.hotel-card {
+  background: var(--white);
+  border: 1px solid var(--light-grey);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+.hotel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.hotel-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+.hotel-dates { font-size: 0.85rem; color: var(--mid-grey); }
+.hotel-address { color: #555; font-size: 0.9rem; margin-bottom: 0.3rem; }
+.hotel-phone { font-size: 0.85rem; color: var(--mid-grey); margin-bottom: 0.75rem; }
+.hotel-notes { font-size: 0.85rem; color: var(--mid-grey); margin-top: 0.75rem; border-top: 1px solid var(--light-grey); padding-top: 0.5rem; }
+.rooms-table-wrapper { overflow-x: auto; margin-top: 1rem; }
+.rooms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.rooms-table th {
+  background: var(--off-white);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mid-grey);
+  border-bottom: 2px solid var(--light-grey);
+}
+.rooms-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--light-grey);
+  vertical-align: middle;
+}
+.occupant {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0.1rem;
+}
+.athlete-tag { background: #e9f7ef; color: var(--green-dark); }
+.staff-tag { background: #eaf0fb; color: var(--navy); }
+
+/* --- Checklist --- */
+.checklist-section { margin-bottom: 2rem; }
+.section-heading {
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+.section-heading.outstanding {
+  background: #fde9e9;
+  color: var(--dragon-red);
+  border-left: 4px solid var(--dragon-red);
+}
+.section-heading.completed {
+  background: #e9f7ef;
+  color: var(--green-dark);
+  border-left: 4px solid var(--green);
+}
+.checklist-list { list-style: none; }
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: var(--white);
+  border: 1px solid var(--light-grey);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.6rem;
+  box-shadow: var(--shadow);
+}
+.checklist-item.priority-high { border-left: 4px solid var(--dragon-red); }
+.checklist-item.priority-medium { border-left: 4px solid var(--gold); }
+.checklist-item.priority-low { border-left: 4px solid var(--green); }
+.checklist-item.done { opacity: 0.55; }
+.task-checkbox {
+  font-size: 1.2rem;
+  min-width: 1.4rem;
+  color: var(--mid-grey);
+  margin-top: 0.1rem;
+}
+.task-checkbox.done { color: var(--green); }
+.task-body { flex: 1; }
+.task-title { font-weight: 700; font-size: 0.95rem; display: block; margin-bottom: 0.3rem; }
+.task-title.done { text-decoration: line-through; }
+.task-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.3rem; }
+.priority-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.priority-badge.priority-high { background: #fde9e9; color: var(--dragon-red); }
+.priority-badge.priority-medium { background: #fef9e7; color: #b7770d; }
+.priority-badge.priority-low { background: #e9f7ef; color: var(--green-dark); }
+.task-due, .task-assigned { font-size: 0.8rem; color: var(--mid-grey); }
+.task-desc { font-size: 0.85rem; color: #555; margin-top: 0.2rem; }
+.task-completed-at { font-size: 0.78rem; color: var(--mid-grey); }
+
+/* --- Misc --- */
+.no-data {
+  background: var(--white);
+  border: 1px dashed var(--light-grey);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  color: var(--mid-grey);
+  font-size: 0.9rem;
+}
+.no-data a { color: var(--navy); font-weight: 600; text-decoration: underline; }
+
+/* --- Alert messages --- */
+.messages { margin-bottom: 1rem; }
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.alert-success { background: #e9f7ef; color: var(--green-dark); border: 1px solid #a9dfbf; }
+.alert-error, .alert-warning { background: #fde9e9; color: var(--dragon-red); border: 1px solid #f5b7b1; }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .header-inner { flex-direction: column; align-items: flex-start; }
+  .stage-grid { grid-template-columns: 1fr 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 1.5rem; }
+  .page-title { font-size: 1.5rem; }
+}
+@media (max-width: 480px) {
+  .stage-grid { grid-template-columns: 1fr; }
+  .main-nav { gap: 0.15rem; }
+  .nav-link { padding: 0.3rem 0.6rem; font-size: 0.82rem; }
+}

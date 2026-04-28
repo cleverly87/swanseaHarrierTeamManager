@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Stage {{ stage.stage_number }}: {{ stage.name }} – Welsh Castles Relay{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="{% url 'relay:home' %}">← Back to All Stages</a>
+</div>
+
+<div class="stage-detail-header {% if stage.is_mountain %}bg-mountain{% endif %}">
+  <div class="stage-detail-badge">
+    <span class="stage-num-large">Stage {{ stage.stage_number }}</span>
+    <span class="day-badge day-{{ stage.day }}">Day {{ stage.day }}</span>
+    {% if stage.is_mountain %}
+    <span class="badge badge-mountain">⛰ Mountain Stage</span>
+    {% else %}
+    <span class="badge badge-road">🛣 Road Stage</span>
+    {% endif %}
+  </div>
+  <h1 class="stage-detail-title">{{ stage.name }}</h1>
+  {% if stage.distance_km %}
+  <p class="stage-detail-distance">{{ stage.distance_km }} km</p>
+  {% endif %}
+</div>
+
+<div class="detail-grid">
+
+  <!-- Timing card -->
+  <div class="detail-card">
+    <h2 class="card-heading">⏱ Timing</h2>
+    <table class="info-table">
+      <tr>
+        <th>Stage Start Time</th>
+        <td>{% if stage.start_time %}{{ stage.start_time|time:"H:i" }}{% else %}<span class="tba">TBA</span>{% endif %}</td>
+      </tr>
+      <tr>
+        <th>Athlete Report Time</th>
+        <td>{% if stage.athlete_report_time %}{{ stage.athlete_report_time|time:"H:i" }}{% else %}<span class="tba">TBA</span>{% endif %}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Assigned athlete card -->
+  <div class="detail-card">
+    <h2 class="card-heading">👤 Assigned Athlete</h2>
+    {% if stage.athlete %}
+    <div class="athlete-detail">
+      <p class="athlete-name">{{ stage.athlete.full_name }}</p>
+    </div>
+    {% else %}
+    <p class="tba">No athlete assigned yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Start location card -->
+  <div class="detail-card">
+    <h2 class="card-heading">📍 Start Location</h2>
+    {% if stage.start_location_name %}
+    <p class="location-name"><strong>{{ stage.start_location_name }}</strong></p>
+    {% endif %}
+    {% if stage.start_location_address %}
+    <address class="location-address">{{ stage.start_location_address|linebreaksbr }}</address>
+    {% else %}
+    <p class="tba">Address not yet added.</p>
+    {% endif %}
+  </div>
+
+  <!-- End location card -->
+  <div class="detail-card">
+    <h2 class="card-heading">🏁 Finish Location</h2>
+    {% if stage.end_location_name %}
+    <p class="location-name"><strong>{{ stage.end_location_name }}</strong></p>
+    {% endif %}
+    {% if stage.end_location_address %}
+    <address class="location-address">{{ stage.end_location_address|linebreaksbr }}</address>
+    {% else %}
+    <p class="tba">Address not yet added.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+{% if stage.description %}
+<div class="detail-card stage-description">
+  <h2 class="card-heading">📝 Stage Description</h2>
+  <div class="description-body">{{ stage.description|linebreaksbr }}</div>
+</div>
+{% endif %}
+
+<div class="stage-nav">
+  {% if stage.stage_number > 1 %}
+  <a href="{% url 'relay:stage_detail' stage.stage_number|add:'-1' %}" class="btn btn-secondary">← Stage {{ stage.stage_number|add:'-1' }}</a>
+  {% endif %}
+  {% if stage.stage_number < 20 %}
+  <a href="{% url 'relay:stage_detail' stage.stage_number|add:'1' %}" class="btn btn-primary">Stage {{ stage.stage_number|add:'1' }} →</a>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Team Roster – Welsh Castles Relay{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1 class="page-title">👥 Team Roster</h1>
+  <p class="page-subtitle">{{ athletes|length }} athletes in the squad</p>
+</div>
+
+{% if athletes %}
+<div class="roster-table-wrapper">
+  <table class="roster-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Assigned Stage(s)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for athlete in athletes %}
+      <tr>
+        <td class="roster-num">{{ forloop.counter }}</td>
+        <td class="roster-name">{{ athlete.full_name }}</td>
+        <td class="roster-stages">
+          {% for stage in athlete.stages.all %}
+          <a href="{% url 'relay:stage_detail' stage.stage_number %}" class="stage-pill">
+            Stage {{ stage.stage_number }}: {{ stage.name }}
+          </a>
+          {% empty %}
+          <span class="tba">Unassigned</span>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="no-data">No athletes added yet. <a href="/admin/relay/athlete/add/">Add athletes in the admin.</a></p>
+{% endif %}
+{% endblock %}
