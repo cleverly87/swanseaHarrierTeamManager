@@ -4,6 +4,7 @@ from django.db import models
 class Athlete(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    urn = models.CharField(max_length=50, blank=True, verbose_name='URN')
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=30, blank=True)
     emergency_contact_name = models.CharField(max_length=100, blank=True)
@@ -57,7 +58,8 @@ class Stage(models.Model):
     stage_number = models.PositiveIntegerField(unique=True)
     name = models.CharField(max_length=200)
     day = models.IntegerField(choices=DAY_CHOICES, default=1)
-    distance_km = models.DecimalField(max_digits=6, decimal_places=2, help_text='Distance in kilometres')
+    distance_miles = models.DecimalField(max_digits=6, decimal_places=2, help_text='Distance in miles')
+    distance_km = models.DecimalField(max_digits=6, decimal_places=2, help_text='Distance in kilometres (auto-calculated)', editable=False)
     is_mountain = models.BooleanField(default=False, help_text='Tick if this is a mountain stage')
     description = models.TextField(blank=True)
 
@@ -82,6 +84,12 @@ class Stage(models.Model):
 
     class Meta:
         ordering = ['stage_number']
+
+    def save(self, *args, **kwargs):
+        # Auto-convert miles to km (1 mile = 1.60934 km)
+        if self.distance_miles:
+            self.distance_km = self.distance_miles * 1.60934
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Stage {self.stage_number}: {self.name}"

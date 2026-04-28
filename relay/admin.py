@@ -7,11 +7,11 @@ from .models import (
 
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'email', 'phone', 'assigned_stages')
-    search_fields = ('first_name', 'last_name', 'email')
+    list_display = ('full_name', 'urn', 'email', 'phone', 'assigned_stages')
+    search_fields = ('first_name', 'last_name', 'email', 'urn')
     fieldsets = (
         ('Personal Details', {
-            'fields': ('first_name', 'last_name', 'email', 'phone')
+            'fields': ('first_name', 'last_name', 'urn', 'email', 'phone')
         }),
         ('Emergency Contact', {
             'fields': ('emergency_contact_name', 'emergency_contact_phone'),
@@ -110,7 +110,7 @@ class HotelBookingAdmin(admin.ModelAdmin):
 @admin.register(Stage)
 class StageAdmin(admin.ModelAdmin):
     list_display = (
-        'stage_number', 'name', 'day', 'distance_km', 'stage_type_badge',
+        'stage_number', 'name', 'day', 'distance_miles', 'display_distance_km', 'stage_type_badge',
         'start_time', 'athlete_report_time', 'athlete', 'start_location_name'
     )
     list_filter = ('day', 'is_mountain', 'athlete')
@@ -119,7 +119,7 @@ class StageAdmin(admin.ModelAdmin):
     list_editable = ('athlete',)
     fieldsets = (
         ('Stage Identity', {
-            'fields': ('stage_number', 'name', 'day', 'distance_km', 'is_mountain', 'description')
+            'fields': ('stage_number', 'name', 'day', 'distance_miles', 'is_mountain', 'description')
         }),
         ('Timing', {
             'fields': ('start_time', 'athlete_report_time')
@@ -134,6 +134,10 @@ class StageAdmin(admin.ModelAdmin):
             'fields': ('athlete',)
         }),
     )
+
+    def display_distance_km(self, obj):
+        return f"{obj.distance_km:.2f} km"
+    display_distance_km.short_description = 'Distance (km)'
 
     def stage_type_badge(self, obj):
         if obj.is_mountain:
