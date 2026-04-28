@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Team Checklist – Welsh Castles Relay{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1 class="page-title">✅ Team Manager Checklist</h1>
+  <p class="page-subtitle">{{ tasks_incomplete|length }} task(s) outstanding · {{ tasks_complete|length }} completed</p>
+</div>
+
+<!-- Outstanding tasks -->
+{% if tasks_incomplete %}
+<section class="checklist-section">
+  <h2 class="section-heading outstanding">Outstanding Tasks</h2>
+  <ul class="checklist-list">
+    {% for task in tasks_incomplete %}
+    <li class="checklist-item priority-{{ task.priority }}">
+      <span class="task-checkbox">○</span>
+      <div class="task-body">
+        <span class="task-title">{{ task.title }}</span>
+        <div class="task-meta">
+          <span class="priority-badge priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+          {% if task.due_date %}
+          <span class="task-due">📅 Due: {{ task.due_date }}{% if task.due_time %} at {{ task.due_time|time:"H:i" }}{% endif %}</span>
+          {% endif %}
+          {% if task.assigned_to %}
+          <span class="task-assigned">👤 {{ task.assigned_to }}</span>
+          {% endif %}
+        </div>
+        {% if task.description %}
+        <p class="task-desc">{{ task.description }}</p>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<!-- Completed tasks -->
+{% if tasks_complete %}
+<section class="checklist-section">
+  <h2 class="section-heading completed">Completed Tasks</h2>
+  <ul class="checklist-list">
+    {% for task in tasks_complete %}
+    <li class="checklist-item done">
+      <span class="task-checkbox done">✓</span>
+      <div class="task-body">
+        <span class="task-title done">{{ task.title }}</span>
+        {% if task.completed_at %}
+        <span class="task-completed-at">Completed: {{ task.completed_at|date:"d M Y H:i" }}</span>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if not tasks_incomplete and not tasks_complete %}
+<p class="no-data">No checklist tasks yet. <a href="/admin/relay/checklisttask/add/">Add tasks in the admin.</a></p>
+{% endif %}
+{% endblock %}

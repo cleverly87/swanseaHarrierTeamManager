@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Relay Stages – Welsh Castles Relay{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1 class="page-title">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Welsh Castles Relay</h1>
+  <p class="page-subtitle">20 stages · North Wales to South Wales · Two days of running</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-value">{{ total_stages }}</span>
+      <span class="stat-label">Stages</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ athletes_assigned }}</span>
+      <span class="stat-label">Athletes Assigned</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">2</span>
+      <span class="stat-label">Days</span>
+    </div>
+  </div>
+</div>
+
+<!-- DAY 1 -->
+<section class="relay-day">
+  <h2 class="day-heading">
+    <span class="day-badge day-1">Day 1</span> North Wales – Conwy to Machynlleth
+  </h2>
+  {% if day1_stages %}
+  <div class="stage-grid">
+    {% for stage in day1_stages %}
+    <a href="{% url 'relay:stage_detail' stage.stage_number %}" class="stage-card {% if stage.is_mountain %}stage-mountain{% endif %}">
+      <div class="stage-card-header">
+        <span class="stage-num">Stage {{ stage.stage_number }}</span>
+        {% if stage.is_mountain %}
+        <span class="badge badge-mountain">⛰ Mountain</span>
+        {% else %}
+        <span class="badge badge-road">🛣 Road</span>
+        {% endif %}
+      </div>
+      <h3 class="stage-name">{{ stage.name }}</h3>
+      <div class="stage-meta">
+        {% if stage.distance_km %}
+        <span class="meta-item">📏 {{ stage.distance_km }} km</span>
+        {% endif %}
+        {% if stage.start_time %}
+        <span class="meta-item">🕐 Start: {{ stage.start_time|time:"H:i" }}</span>
+        {% endif %}
+        {% if stage.athlete_report_time %}
+        <span class="meta-item">⏰ Report: {{ stage.athlete_report_time|time:"H:i" }}</span>
+        {% endif %}
+      </div>
+      {% if stage.start_location_name %}
+      <div class="stage-location">📍 {{ stage.start_location_name }}</div>
+      {% endif %}
+      <div class="stage-athlete">
+        {% if stage.athlete %}
+        <span class="athlete-assigned">👤 {{ stage.athlete.full_name }}</span>
+        {% else %}
+        <span class="athlete-tba">Runner TBA</span>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="no-data">No Day 1 stages added yet. <a href="/admin/relay/stage/add/">Add stages in the admin.</a></p>
+  {% endif %}
+</section>
+
+<!-- DAY 2 -->
+<section class="relay-day">
+  <h2 class="day-heading">
+    <span class="day-badge day-2">Day 2</span> South Wales – Machynlleth to Cardiff
+  </h2>
+  {% if day2_stages %}
+  <div class="stage-grid">
+    {% for stage in day2_stages %}
+    <a href="{% url 'relay:stage_detail' stage.stage_number %}" class="stage-card {% if stage.is_mountain %}stage-mountain{% endif %}">
+      <div class="stage-card-header">
+        <span class="stage-num">Stage {{ stage.stage_number }}</span>
+        {% if stage.is_mountain %}
+        <span class="badge badge-mountain">⛰ Mountain</span>
+        {% else %}
+        <span class="badge badge-road">🛣 Road</span>
+        {% endif %}
+      </div>
+      <h3 class="stage-name">{{ stage.name }}</h3>
+      <div class="stage-meta">
+        {% if stage.distance_km %}
+        <span class="meta-item">📏 {{ stage.distance_km }} km</span>
+        {% endif %}
+        {% if stage.start_time %}
+        <span class="meta-item">🕐 Start: {{ stage.start_time|time:"H:i" }}</span>
+        {% endif %}
+        {% if stage.athlete_report_time %}
+        <span class="meta-item">⏰ Report: {{ stage.athlete_report_time|time:"H:i" }}</span>
+        {% endif %}
+      </div>
+      {% if stage.start_location_name %}
+      <div class="stage-location">📍 {{ stage.start_location_name }}</div>
+      {% endif %}
+      <div class="stage-athlete">
+        {% if stage.athlete %}
+        <span class="athlete-assigned">👤 {{ stage.athlete.full_name }}</span>
+        {% else %}
+        <span class="athlete-tba">Runner TBA</span>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="no-data">No Day 2 stages added yet. <a href="/admin/relay/stage/add/">Add stages in the admin.</a></p>
+  {% endif %}
+</section>
+{% endblock %}
