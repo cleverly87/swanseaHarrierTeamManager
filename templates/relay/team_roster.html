@@ -6,6 +6,11 @@
 <div class="page-hero">
   <h1 class="page-title">👥 Team Roster</h1>
   <p class="page-subtitle">{{ athletes|length }} athletes in the squad</p>
+  <div class="sort-controls">
+    <span class="sort-label">Sort by:</span>
+    <a href="?sort=name" class="sort-btn {% if current_sort == 'name' %}active{% endif %}">Name</a>
+    <a href="?sort=stage" class="sort-btn {% if current_sort == 'stage' %}active{% endif %}">Stage Number</a>
+  </div>
 </div>
 
 {% if athletes %}

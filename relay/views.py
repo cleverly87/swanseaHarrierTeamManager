@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db import models
 from .models import Stage, Athlete, SupportStaff, Hotel, HotelRoom, ChecklistTask
 
 
@@ -26,8 +27,27 @@ def stage_detail(request, stage_number):
 
 def team_roster(request):
     """Public page listing all athletes in the squad."""
+    sort = request.GET.get('sort', 'name')  # Default sort by name
+    
     athletes = Athlete.objects.prefetch_related('stages')
-    context = {'athletes': athletes}
+    
+    if sort == 'stage':
+        # Sort by stage number (athletes with stages first, then by lowest stage number)
+        athletes = athletes.annotate(
+            min_stage=models.Min('stages__stage_number')
+        ).order_by(
+            models.Case(
+                models.When(min_stage__isnull=True, then=999),
+                default='min_stage'
+            )
+        )
+    else:  # sort == 'name' (default)
+        athletes = athletes.order_by('last_name', 'first_name')
+    
+    context = {
+        'athletes': athletes,
+        'current_sort': sort,
+    }
     return render(request, 'relay/team_roster.html', context)
 
 

@@ -91,6 +91,28 @@ img { max-width: 100%; }
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+.header-contacts {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.header-contact-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+}
+.contact-name {
+  font-weight: 700;
+  color: var(--gold);
+}
+.contact-phone {
+  font-size: 0.7rem;
+  color: var(--light-grey);
+}
 .main-nav {
   display: flex;
   align-items: center;
@@ -147,6 +169,36 @@ img { max-width: 100%; }
   font-size: 1rem;
   color: rgba(255,255,255,0.8);
   margin-bottom: 1.5rem;
+}
+.sort-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.sort-label {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+}
+.sort-btn {
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  color: var(--white);
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.sort-btn:hover {
+  background: rgba(255,255,255,0.2);
+  color: var(--white);
+}
+.sort-btn.active {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 700;
 }
 .hero-stats {
   display: flex;
@@ -271,6 +323,42 @@ img { max-width: 100%; }
   color: var(--mid-grey);
   font-style: italic;
 }
+.stage-contact {
+  font-size: 0.75rem;
+  color: var(--navy-light);
+  margin-top: 0.3rem;
+  padding-top: 0.3rem;
+  border-top: 1px dashed var(--light-grey);
+}
+.contact-label {
+  font-weight: 600;
+  color: var(--mid-grey);
+}
+.contact-info {
+  color: var(--navy);
+  font-weight: 600;
+}
+.stage-records {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--light-grey);
+}
+.record-item {
+  font-size: 0.65rem;
+  margin-bottom: 0.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.record-label {
+  color: var(--mid-grey);
+  font-weight: 600;
+}
+.record-value {
+  color: var(--navy);
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
 
 /* --- Stage detail page --- */
 .breadcrumb {
@@ -337,8 +425,11 @@ img { max-width: 100%; }
 .info-table th, .info-table td { padding: 0.4rem 0; text-align: left; }
 .info-table th { width: 50%; font-size: 0.85rem; color: var(--mid-grey); font-weight: 600; }
 .info-table td { font-size: 0.9rem; font-weight: 600; }
+.record-year { color: var(--mid-grey); font-weight: 400; font-size: 0.85rem; }
 .tba { color: var(--mid-grey); font-style: italic; }
 .athlete-name { font-size: 1.2rem; font-weight: 700; color: var(--green-dark); }
+.contact-name-large { font-size: 1.2rem; font-weight: 700; color: var(--navy); }
+.contact-phone-large { font-size: 1rem; font-weight: 600; color: var(--navy-light); margin-top: 0.3rem; }
 .location-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
 .location-address { font-size: 0.9rem; color: #555; line-height: 1.5; }
 .description-body { font-size: 0.95rem; line-height: 1.7; }

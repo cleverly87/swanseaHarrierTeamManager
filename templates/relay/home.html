@@ -41,8 +41,8 @@
       </div>
       <h3 class="stage-name">{{ stage.name }}</h3>
       <div class="stage-meta">
-        {% if stage.distance_km %}
-        <span class="meta-item">📏 {{ stage.distance_km }} km</span>
+        {% if stage.distance_miles %}
+        <span class="meta-item">📏 {{ stage.distance_miles }} miles</span>
         {% endif %}
         {% if stage.start_time %}
         <span class="meta-item">🕐 Start: {{ stage.start_time|time:"H:i" }}</span>
@@ -61,6 +61,28 @@
         <span class="athlete-tba">Runner TBA</span>
         {% endif %}
       </div>
+      {% if stage.stage_contact %}
+      <div class="stage-contact">
+        <span class="contact-label">📞 Stage Contact:</span>
+        <span class="contact-info">{{ stage.stage_contact.full_name }}{% if stage.stage_contact.phone %} - {{ stage.stage_contact.phone }}{% endif %}</span>
+      </div>
+      {% endif %}
+      {% if stage.mens_record or stage.womens_record %}
+      <div class="stage-records">
+        {% if stage.mens_record %}
+        <div class="record-item">
+          <span class="record-label">♂ Men's Record:</span>
+          <span class="record-value">{{ stage.mens_record }} ({{ stage.mens_record_year }})</span>
+        </div>
+        {% endif %}
+        {% if stage.womens_record %}
+        <div class="record-item">
+          <span class="record-label">♀ Women's Record:</span>
+          <span class="record-value">{{ stage.womens_record }} ({{ stage.womens_record_year }})</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
     </a>
     {% endfor %}
   </div>
@@ -88,8 +110,8 @@
       </div>
       <h3 class="stage-name">{{ stage.name }}</h3>
       <div class="stage-meta">
-        {% if stage.distance_km %}
-        <span class="meta-item">📏 {{ stage.distance_km }} km</span>
+        {% if stage.distance_miles %}
+        <span class="meta-item">📏 {{ stage.distance_miles }} miles</span>
         {% endif %}
         {% if stage.start_time %}
         <span class="meta-item">🕐 Start: {{ stage.start_time|time:"H:i" }}</span>
@@ -108,6 +130,28 @@
         <span class="athlete-tba">Runner TBA</span>
         {% endif %}
       </div>
+      {% if stage.stage_contact %}
+      <div class="stage-contact">
+        <span class="contact-label">📞 Stage Contact:</span>
+        <span class="contact-info">{{ stage.stage_contact.full_name }}{% if stage.stage_contact.phone %} - {{ stage.stage_contact.phone }}{% endif %}</span>
+      </div>
+      {% endif %}
+      {% if stage.mens_record or stage.womens_record %}
+      <div class="stage-records">
+        {% if stage.mens_record %}
+        <div class="record-item">
+          <span class="record-label">♂ Men's Record:</span>
+          <span class="record-value">{{ stage.mens_record }} ({{ stage.mens_record_year }})</span>
+        </div>
+        {% endif %}
+        {% if stage.womens_record %}
+        <div class="record-item">
+          <span class="record-label">♀ Women's Record:</span>
+          <span class="record-value">{{ stage.womens_record }} ({{ stage.womens_record_year }})</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
     </a>
     {% endfor %}
   </div>

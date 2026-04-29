@@ -18,6 +18,16 @@
           <span class="brand-sub">Swansea Harriers</span>
         </div>
       </div>
+      <div class="header-contacts">
+        <div class="header-contact-item">
+          <span class="contact-name">Andrew Cleverly</span>
+          <span class="contact-phone">📞 07507 537864</span>
+        </div>
+        <div class="header-contact-item">
+          <span class="contact-name">Marc Hobbs</span>
+          <span class="contact-phone">📞 TBC</span>
+        </div>
+      </div>
       <nav class="main-nav">
         <a href="{% url 'relay:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Relay Stages</a>
         <a href="{% url 'relay:team_roster' %}" class="nav-link {% if request.resolver_match.url_name == 'team_roster' %}active{% endif %}">Team</a>

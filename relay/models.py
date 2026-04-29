@@ -1,9 +1,21 @@
+from decimal import Decimal
 from django.db import models
 
 
 class Athlete(models.Model):
+    AVAILABILITY_CHOICES = [
+        ('available', 'Available'),
+        ('unavailable', 'Unavailable'),
+        ('unknown', 'Unknown'),
+    ]
+    
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    availability = models.CharField(
+        max_length=20,
+        choices=AVAILABILITY_CHOICES,
+        default='unknown'
+    )
     urn = models.CharField(max_length=50, blank=True, verbose_name='URN')
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=30, blank=True)
@@ -67,6 +79,12 @@ class Stage(models.Model):
     start_time = models.TimeField(null=True, blank=True, help_text='Scheduled start time of the stage')
     athlete_report_time = models.TimeField(null=True, blank=True, help_text='When the athlete must be at the start')
 
+    # Stage Records
+    mens_record = models.CharField(max_length=20, blank=True, help_text='Men\'s stage record time (e.g., 50:45)')
+    mens_record_year = models.IntegerField(null=True, blank=True, help_text='Year men\'s record was set')
+    womens_record = models.CharField(max_length=20, blank=True, help_text='Women\'s stage record time (e.g., 56:53)')
+    womens_record_year = models.IntegerField(null=True, blank=True, help_text='Year women\'s record was set')
+
     # Location
     start_location_name = models.CharField(max_length=200, blank=True)
     start_location_address = models.TextField(blank=True, help_text='Full postal address of the start point')
@@ -82,13 +100,23 @@ class Stage(models.Model):
         related_name='stages',
     )
 
+    # Stage contact (from support staff)
+    stage_contact = models.ForeignKey(
+        'SupportStaff',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='contact_stages',
+        help_text='Support staff member assigned as stage contact',
+    )
+
     class Meta:
         ordering = ['stage_number']
 
     def save(self, *args, **kwargs):
         # Auto-convert miles to km (1 mile = 1.60934 km)
         if self.distance_miles:
-            self.distance_km = self.distance_miles * 1.60934
+            self.distance_km = self.distance_miles * Decimal('1.60934')
         super().save(*args, **kwargs)
 
     def __str__(self):

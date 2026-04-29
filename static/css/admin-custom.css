@@ -1,0 +1,48 @@
+/* Custom styles for Django admin - make stage list scrollable */
+
+/* Make the change list table horizontally scrollable */
+#changelist .results {
+    overflow-x: auto;
+    display: block;
+}
+
+#changelist table {
+    min-width: 100%;
+    width: auto;
+}
+
+/* Ensure first column (checkbox) stays visible when scrolling */
+#changelist tbody td:first-child,
+#changelist thead th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #fff;
+    z-index: 10;
+}
+
+#changelist thead th:first-child {
+    background-color: #f2f2f2;
+}
+
+/* Add some padding to prevent content from being cut off */
+#changelist .results {
+    padding-bottom: 10px;
+}
+
+/* Make scrollbar more visible */
+#changelist .results::-webkit-scrollbar {
+    height: 12px;
+}
+
+#changelist .results::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#changelist .results::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+}
+
+#changelist .results::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

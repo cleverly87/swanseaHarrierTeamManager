@@ -18,8 +18,8 @@
     {% endif %}
   </div>
   <h1 class="stage-detail-title">{{ stage.name }}</h1>
-  {% if stage.distance_km %}
-  <p class="stage-detail-distance">{{ stage.distance_km }} km</p>
+  {% if stage.distance_miles %}
+  <p class="stage-detail-distance">{{ stage.distance_miles }} miles ({{ stage.distance_km|floatformat:2 }} km)</p>
   {% endif %}
 </div>
 
@@ -51,6 +51,42 @@
     <p class="tba">No athlete assigned yet.</p>
     {% endif %}
   </div>
+
+  <!-- Stage Contact card -->
+  <div class="detail-card">
+    <h2 class="card-heading">📞 Stage Contact</h2>
+    {% if stage.stage_contact %}
+    <div class="contact-detail">
+      <p class="contact-name-large">{{ stage.stage_contact.full_name }}</p>
+      {% if stage.stage_contact.phone %}
+      <p class="contact-phone-large">📱 {{ stage.stage_contact.phone }}</p>
+      {% endif %}
+    </div>
+    {% else %}
+    <p class="tba">No stage contact assigned yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Stage Records card -->
+  {% if stage.mens_record or stage.womens_record %}
+  <div class="detail-card">
+    <h2 class="card-heading">🏆 Stage Records</h2>
+    <table class="info-table">
+      {% if stage.mens_record %}
+      <tr>
+        <th>♂ Men's Record</th>
+        <td><strong>{{ stage.mens_record }}</strong> <span class="record-year">({{ stage.mens_record_year }})</span></td>
+      </tr>
+      {% endif %}
+      {% if stage.womens_record %}
+      <tr>
+        <th>♀ Women's Record</th>
+        <td><strong>{{ stage.womens_record }}</strong> <span class="record-year">({{ stage.womens_record_year }})</span></td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+  {% endif %}
 
   <!-- Start location card -->
   <div class="detail-card">

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import (
     Athlete, SupportStaff, Stage, Hotel, HotelRoom, HotelBooking, ChecklistTask
 )
@@ -7,11 +8,12 @@ from .models import (
 
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'urn', 'email', 'phone', 'assigned_stages')
+    list_display = ('full_name', 'availability', 'urn', 'email', 'phone', 'assigned_stages')
+    list_editable = ('availability',)
     search_fields = ('first_name', 'last_name', 'email', 'urn')
     fieldsets = (
         ('Personal Details', {
-            'fields': ('first_name', 'last_name', 'urn', 'email', 'phone')
+            'fields': ('first_name', 'last_name', 'availability', 'urn', 'email', 'phone')
         }),
         ('Emergency Contact', {
             'fields': ('emergency_contact_name', 'emergency_contact_phone'),
@@ -35,7 +37,7 @@ class AthleteAdmin(admin.ModelAdmin):
 class SupportStaffAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'role', 'email', 'phone')
     list_filter = ('role',)
-    search_fields = ('first_name', 'last_name')
+    search_fields = ('first_name', 'last_name', 'email')
 
 
 class HotelRoomInline(admin.TabularInline):
@@ -111,12 +113,12 @@ class HotelBookingAdmin(admin.ModelAdmin):
 class StageAdmin(admin.ModelAdmin):
     list_display = (
         'stage_number', 'name', 'day', 'distance_miles', 'display_distance_km', 'stage_type_badge',
-        'start_time', 'athlete_report_time', 'athlete', 'start_location_name'
+        'start_time', 'athlete_report_time', 'athlete', 'stage_contact', 'start_location_name'
     )
     list_filter = ('day', 'is_mountain', 'athlete')
     search_fields = ('name', 'start_location_name', 'end_location_name')
-    autocomplete_fields = ['athlete']
-    list_editable = ('athlete',)
+    autocomplete_fields = ['athlete', 'stage_contact']
+    list_editable = ('athlete', 'stage_contact')
     fieldsets = (
         ('Stage Identity', {
             'fields': ('stage_number', 'name', 'day', 'distance_miles', 'is_mountain', 'description')
@@ -124,14 +126,21 @@ class StageAdmin(admin.ModelAdmin):
         ('Timing', {
             'fields': ('start_time', 'athlete_report_time')
         }),
+        ('Stage Records', {
+            'fields': (
+                ('mens_record', 'mens_record_year'),
+                ('womens_record', 'womens_record_year')
+            ),
+            'classes': ('collapse',),
+        }),
         ('Locations', {
             'fields': (
                 'start_location_name', 'start_location_address',
                 'end_location_name', 'end_location_address'
             )
         }),
-        ('Athlete Assignment', {
-            'fields': ('athlete',)
+        ('Assignments', {
+            'fields': ('athlete', 'stage_contact')
         }),
     )
 
@@ -141,9 +150,14 @@ class StageAdmin(admin.ModelAdmin):
 
     def stage_type_badge(self, obj):
         if obj.is_mountain:
-            return format_html('<span style="color:#c0392b;font-weight:bold;">⛰ Mountain</span>')
-        return format_html('<span style="color:#27ae60;">🛣 Road</span>')
+            return mark_safe('<span style="color:#c0392b;font-weight:bold;">⛰ Mountain</span>')
+        return mark_safe('<span style="color:#27ae60;">🛣 Road</span>')
     stage_type_badge.short_description = 'Type'
+
+    class Media:
+        css = {
+            'all': ('css/admin-custom.css',)
+        }
 
 
 @admin.register(ChecklistTask)
