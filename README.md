@@ -54,6 +54,50 @@ Visit:
 - **Public site** → http://127.0.0.1:8000/
 - **Admin panel** → http://127.0.0.1:8000/admin/
 
+## Production Deployment
+
+### Live Site
+The application is hosted on **PythonAnywhere**:
+- **Production URL** → https://cleverly87.eu.pythonanywhere.com/
+- **Admin panel** → https://cleverly87.eu.pythonanywhere.com/admin/
+
+### Deploying Changes
+
+When you make changes locally and want to update the live site:
+
+#### 1. Commit and push your changes
+```cmd
+git add .
+git commit -m "Description of your changes"
+git push origin main
+```
+
+#### 2. Update the production server
+Log into PythonAnywhere, open a Bash console, and run:
+```bash
+cd ~/swanseaHarrierTeamManager
+source venv/bin/activate
+git pull origin main
+```
+
+#### 3. Run migrations (if you changed models)
+```bash
+python manage.py migrate
+```
+
+#### 4. Collect static files (if you changed CSS/JS/images)
+```bash
+python manage.py collectstatic --noinput
+```
+
+#### 5. Reload the web app
+Go to the **Web** tab on PythonAnywhere and click the green **Reload** button.
+
+### Important Notes
+- Always test changes locally before deploying to production
+- Database changes on the live site must be done through the admin panel or by exporting/importing data
+- Never commit sensitive data like passwords or secret keys to the repository
+
 ## Project Layout
 ```
 castles_relay/          Django project settings & URL conf
