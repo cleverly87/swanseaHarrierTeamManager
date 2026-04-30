@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-j339s^52xplge=4t+mdg^5^j^tqte$+$jtp7nnym7(zm6ad(o2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Add your PythonAnywhere domain here (e.g., 'yourusername.pythonanywhere.com')
+ALLOWED_HOSTS = ['*']  # For testing - replace with your actual domain in production
 
 
 # Application definition
@@ -116,6 +117,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production - collectstatic will gather files here
 
