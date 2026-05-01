@@ -159,4 +159,25 @@
   <p class="no-data">No Day 2 stages added yet. <a href="/admin/relay/stage/add/">Add stages in the admin.</a></p>
   {% endif %}
 </section>
+
+<!-- Interactive Map -->
+<section class="relay-map-section">
+  <h2 class="section-heading" style="text-align: center; margin-bottom: 1rem;">
+    🗺️ Interactive Route Map
+  </h2>
+  <p style="text-align: center; color: var(--mid-grey); margin-bottom: 1rem;">
+    View all 20 stages and parking locations on our interactive Google Map
+  </p>
+  <div class="map-container">
+    <iframe 
+      src="https://www.google.com/maps/d/embed?mid=17h-b1JlRfv59mYwI1_javlkVtFTx-dk&ehbc=2E312F&ll=52.95470080307069%2C-3.9758537898635105&z=10" 
+      width="100%" 
+      height="500" 
+      style="border:0; border-radius: var(--radius);" 
+      allowfullscreen="" 
+      loading="lazy" 
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
+</section>
 {% endblock %}

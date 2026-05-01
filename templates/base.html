@@ -11,27 +11,30 @@
   <!-- Header / Nav -->
   <header class="site-header">
     <div class="container header-inner">
-      <div class="brand">
-        <img src="{% static 'images/logo.png' %}" alt="Swansea Harriers Logo" class="brand-logo" />
-        <div>
-          <span class="brand-title">Welsh Castles Relay</span>
-          <span class="brand-sub">Swansea Harriers</span>
+      <div class="brand-section">
+        <div class="brand">
+          <img src="{% static 'images/logo.png' %}" alt="Swansea Harriers Logo" class="brand-logo" />
+          <div>
+            <span class="brand-title">Welsh Castles Relay</span>
+            <span class="brand-sub">Swansea Harriers</span>
+          </div>
         </div>
-      </div>
-      <div class="header-contacts">
-        <div class="header-contact-item">
-          <span class="contact-name">Andrew Cleverly</span>
-          <span class="contact-phone">📞 07507 537864</span>
-        </div>
-        <div class="header-contact-item">
-          <span class="contact-name">Marc Hobbs</span>
-          <span class="contact-phone">📞 07870 851345</span>
+        <div class="header-contacts">
+          <div class="header-contact-item">
+            <span class="contact-name">Andrew Cleverly</span>
+            <span class="contact-phone">📞 07507 537864</span>
+          </div>
+          <div class="header-contact-item">
+            <span class="contact-name">Marc Hobbs</span>
+            <span class="contact-phone">📞 07870 851345</span>
+          </div>
         </div>
       </div>
       <nav class="main-nav">
         <a href="{% url 'relay:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Relay Stages</a>
         <a href="{% url 'relay:team_roster' %}" class="nav-link {% if request.resolver_match.url_name == 'team_roster' %}active{% endif %}">Team</a>
         <a href="{% url 'relay:accommodation' %}" class="nav-link {% if request.resolver_match.url_name == 'accommodation' %}active{% endif %}">Accommodation</a>
+        <a href="{% url 'relay:marshalling' %}" class="nav-link {% if request.resolver_match.url_name == 'marshalling' %}active{% endif %}">Marshalling</a>
         <a href="{% url 'relay:checklist' %}" class="nav-link {% if request.resolver_match.url_name == 'checklist' %}active{% endif %}">Checklist</a>
         <a href="/admin/" class="nav-link nav-admin">⚙ Admin</a>
       </nav>

@@ -67,3 +67,8 @@ def checklist_view(request):
         'tasks_complete': tasks_complete,
     }
     return render(request, 'relay/checklist.html', context)
+
+
+def marshalling_view(request):
+    """Swansea Harriers marshalling duties for Stage 14."""
+    return render(request, 'relay/marshalling.html')

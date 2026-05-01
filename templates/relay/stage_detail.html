@@ -123,6 +123,15 @@
 </div>
 {% endif %}
 
+<div class="detail-card stage-profile">
+  <h2 class="card-heading">📊 Stage Profile</h2>
+  {% load static %}
+  <img src="{% static 'images/stage_profiles/' %}stage_{{ stage.stage_number }}_profile.png" 
+       alt="Stage {{ stage.stage_number }} elevation profile" 
+       class="stage-profile-image"
+       onerror="this.parentElement.style.display='none'" />
+</div>
+
 <div class="stage-nav">
   {% if stage.stage_number > 1 %}
   <a href="{% url 'relay:stage_detail' stage.stage_number|add:'-1' %}" class="btn btn-secondary">← Stage {{ stage.stage_number|add:'-1' }}</a>
