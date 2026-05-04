@@ -37,6 +37,12 @@
         <th>Athlete Report Time</th>
         <td>{% if stage.athlete_report_time %}{{ stage.athlete_report_time|time:"H:i" }}{% else %}<span class="tba">TBA</span>{% endif %}</td>
       </tr>
+      {% if stage.travel_time_from_swansea %}
+      <tr>
+        <th>Travel from Swansea</th>
+        <td><span class="travel-time">🚗 {{ stage.travel_time_from_swansea }}</span></td>
+      </tr>
+      {% endif %}
     </table>
   </div>
 

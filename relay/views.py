@@ -9,11 +9,16 @@ def relay_home(request):
     day2_stages = Stage.objects.filter(day=2).select_related('athlete')
     total_stages = Stage.objects.count()
     athletes_assigned = Stage.objects.filter(athlete__isnull=False).values('athlete').distinct().count()
+    
+    # Get all reserve athletes
+    reserves = Athlete.objects.filter(is_reserve=True).order_by('last_name', 'first_name')
+    
     context = {
         'day1_stages': day1_stages,
         'day2_stages': day2_stages,
         'total_stages': total_stages,
         'athletes_assigned': athletes_assigned,
+        'reserves': reserves,
     }
     return render(request, 'relay/home.html', context)
 
@@ -38,7 +43,8 @@ def team_roster(request):
         ).order_by(
             models.Case(
                 models.When(min_stage__isnull=True, then=999),
-                default='min_stage'
+                default='min_stage',
+                output_field=models.IntegerField()
             )
         )
     else:  # sort == 'name' (default)

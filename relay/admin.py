@@ -8,12 +8,13 @@ from .models import (
 
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'availability', 'urn', 'email', 'phone', 'assigned_stages')
-    list_editable = ('availability',)
+    list_display = ('full_name', 'availability', 'is_reserve', 'urn', 'email', 'phone', 'assigned_stages')
+    list_editable = ('availability', 'is_reserve')
     search_fields = ('first_name', 'last_name', 'email', 'urn')
+    list_filter = ('is_reserve', 'availability')
     fieldsets = (
         ('Personal Details', {
-            'fields': ('first_name', 'last_name', 'availability', 'urn', 'email', 'phone')
+            'fields': ('first_name', 'last_name', 'availability', 'is_reserve', 'urn', 'email', 'phone')
         }),
         ('Emergency Contact', {
             'fields': ('emergency_contact_name', 'emergency_contact_phone'),
@@ -136,7 +137,8 @@ class StageAdmin(admin.ModelAdmin):
         ('Locations', {
             'fields': (
                 'start_location_name', 'start_location_address',
-                'end_location_name', 'end_location_address'
+                'end_location_name', 'end_location_address',
+                'travel_time_from_swansea'
             )
         }),
         ('Assignments', {

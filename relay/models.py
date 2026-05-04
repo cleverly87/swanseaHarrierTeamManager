@@ -22,6 +22,7 @@ class Athlete(models.Model):
     emergency_contact_name = models.CharField(max_length=100, blank=True)
     emergency_contact_phone = models.CharField(max_length=30, blank=True)
     notes = models.TextField(blank=True)
+    is_reserve = models.BooleanField(default=False, verbose_name='Reserve Runner')
 
     class Meta:
         ordering = ['last_name', 'first_name']
@@ -108,6 +109,63 @@ class Stage(models.Model):
         on_delete=models.SET_NULL,
         related_name='contact_stages',
         help_text='Support staff member assigned as stage contact',
+    )
+
+    # Travel time from Swansea
+    travel_time_from_swansea = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text='Estimated travel time from Swansea (e.g., "2 hours 30 mins")',
+    )
+
+    # Reserves
+    reserve1 = models.ForeignKey(
+        Athlete,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reserve1_stages',
+        verbose_name='Reserve 1',
+    )
+    reserve2 = models.ForeignKey(
+        Athlete,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reserve2_stages',
+        verbose_name='Reserve 2',
+    )
+    reserve3 = models.ForeignKey(
+        Athlete,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reserve3_stages',
+        verbose_name='Reserve 3',
+    )
+    reserve4 = models.ForeignKey(
+        Athlete,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reserve4_stages',
+        verbose_name='Reserve 4',
+    )
+    reserve5 = models.ForeignKey(
+        Athlete,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reserve5_stages',
+        verbose_name='Reserve 5',
+    )
+    reserve6 = models.ForeignKey(
+        Athlete,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reserve6_stages',
+        verbose_name='Reserve 6',
     )
 
     class Meta:

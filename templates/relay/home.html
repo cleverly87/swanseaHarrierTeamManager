@@ -160,6 +160,33 @@
   {% endif %}
 </section>
 
+<!-- Reserves Table -->
+{% if reserves %}
+<section class="reserves-section">
+  <h2 class="section-heading" style="text-align: center; margin-bottom: 1rem;">
+    🔄 Reserve Runners
+  </h2>
+  <div class="reserves-table-wrapper">
+    <table class="roster-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reserve in reserves %}
+        <tr>
+          <td class="roster-num">{{ forloop.counter }}</td>
+          <td class="roster-name">{{ reserve.full_name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
 <!-- Interactive Map -->
 <section class="relay-map-section">
   <h2 class="section-heading" style="text-align: center; margin-bottom: 1rem;">
