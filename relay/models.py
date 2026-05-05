@@ -17,6 +17,7 @@ class Athlete(models.Model):
         default='unknown'
     )
     urn = models.CharField(max_length=50, blank=True, verbose_name='URN')
+    date_of_birth = models.DateField(null=True, blank=True, verbose_name='Date of Birth')
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=30, blank=True)
     emergency_contact_name = models.CharField(max_length=100, blank=True)

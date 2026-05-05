@@ -1,4 +1,6 @@
+import csv
 from django.contrib import admin
+from django.http import HttpResponse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from .models import (
@@ -6,15 +8,38 @@ from .models import (
 )
 
 
+def export_athletes_csv(modeladmin, request, queryset):
+    """Export selected athletes to CSV with First Name, Surname, DOB, URN"""
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="athletes_export.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['First Name', 'Surname', 'Date of Birth', 'URN'])
+    
+    for athlete in queryset.order_by('last_name', 'first_name'):
+        dob = athlete.date_of_birth.strftime('%d/%m/%Y') if athlete.date_of_birth else ''
+        writer.writerow([
+            athlete.first_name,
+            athlete.last_name,
+            dob,
+            athlete.urn
+        ])
+    
+    return response
+
+export_athletes_csv.short_description = 'Export selected athletes to CSV (Name, DOB, URN)'
+
+
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'availability', 'is_reserve', 'urn', 'email', 'phone', 'assigned_stages')
+    list_display = ('full_name', 'date_of_birth', 'availability', 'is_reserve', 'urn', 'email', 'phone', 'assigned_stages')
     list_editable = ('availability', 'is_reserve')
     search_fields = ('first_name', 'last_name', 'email', 'urn')
     list_filter = ('is_reserve', 'availability')
+    actions = [export_athletes_csv]
     fieldsets = (
         ('Personal Details', {
-            'fields': ('first_name', 'last_name', 'availability', 'is_reserve', 'urn', 'email', 'phone')
+            'fields': ('first_name', 'last_name', 'date_of_birth', 'availability', 'is_reserve', 'urn', 'email', 'phone')
         }),
         ('Emergency Contact', {
             'fields': ('emergency_contact_name', 'emergency_contact_phone'),
