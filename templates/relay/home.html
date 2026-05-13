@@ -4,23 +4,81 @@
 
 {% block content %}
 <div class="page-hero">
-  <h1 class="page-title">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Welsh Castles Relay</h1>
-  <p class="page-subtitle">20 stages · North Wales to South Wales · Two days of running</p>
-  <div class="hero-stats">
-    <div class="stat">
-      <span class="stat-value">{{ total_stages }}</span>
-      <span class="stat-label">Stages</span>
+  <div class="hero-content">
+    <h1 class="page-title">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Welsh Castles Relay</h1>
+    <p class="page-subtitle">20 stages · North Wales to South Wales · Two days of running</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-value">{{ total_stages }}</span>
+        <span class="stat-label">Stages</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ athletes_assigned }}</span>
+        <span class="stat-label">Athletes Assigned</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">2</span>
+        <span class="stat-label">Days</span>
+      </div>
     </div>
-    <div class="stat">
-      <span class="stat-value">{{ athletes_assigned }}</span>
-      <span class="stat-label">Athletes Assigned</span>
-    </div>
-    <div class="stat">
-      <span class="stat-value">2</span>
-      <span class="stat-label">Days</span>
+  </div>
+  
+  <div class="countdown-timer">
+    <div class="countdown-label">Event Starts In</div>
+    <div class="countdown-boxes">
+      <div class="countdown-box">
+        <span class="countdown-number" id="days">00</span>
+        <span class="countdown-unit">Days</span>
+      </div>
+      <div class="countdown-box">
+        <span class="countdown-number" id="hours">00</span>
+        <span class="countdown-unit">Hours</span>
+      </div>
+      <div class="countdown-box">
+        <span class="countdown-number" id="minutes">00</span>
+        <span class="countdown-unit">Mins</span>
+      </div>
+      <div class="countdown-box">
+        <span class="countdown-number" id="seconds">00</span>
+        <span class="countdown-unit">Secs</span>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+function updateCountdown() {
+  // Event date: June 6, 2026 at 10:00 AM
+  const eventDate = new Date('2026-06-06T10:00:00').getTime();
+  const now = new Date().getTime();
+  const distance = eventDate - now;
+  
+  // Calculate time units
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  
+  // Update the display
+  document.getElementById('days').textContent = String(days).padStart(2, '0');
+  document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+  document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+  document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+  
+  // If countdown is finished
+  if (distance < 0) {
+    document.querySelector('.countdown-label').textContent = 'Event in Progress!';
+    document.getElementById('days').textContent = '00';
+    document.getElementById('hours').textContent = '00';
+    document.getElementById('minutes').textContent = '00';
+    document.getElementById('seconds').textContent = '00';
+  }
+}
+
+// Update countdown every second
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
 
 <!-- DAY 1 -->
 <section class="relay-day">

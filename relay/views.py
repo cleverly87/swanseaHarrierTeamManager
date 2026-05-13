@@ -78,3 +78,8 @@ def checklist_view(request):
 def marshalling_view(request):
     """Swansea Harriers marshalling duties for Stage 14."""
     return render(request, 'relay/marshalling.html')
+
+
+def sponsorship_view(request):
+    """Sponsorship pitch page for Welsh Castles Relay 2026."""
+    return render(request, 'relay/sponsorship.html')

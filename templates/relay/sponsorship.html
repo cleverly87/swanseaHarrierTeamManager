@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sponsorship Pitch – Welsh Castles Relay 2026{% endblock %}
+
+{% block content %}
+<div class="sponsorship-page">
+  <!-- Print Button (hidden when printing) -->
+  <div class="print-button-container">
+    <button onclick="window.print()" class="print-button">📄 Download as PDF</button>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="sponsor-hero">
+    <div class="sponsor-hero-content">
+      <h1 class="sponsor-main-title">Swansea Harriers</h1>
+      <h2 class="sponsor-subtitle">Welsh Castles Relay 2026</h2>
+      <div class="sponsor-event-details">
+        <p class="event-detail">📅 6th–7th June 2026</p>
+        <p class="event-detail">📍 Caernarfon Castle → Cardiff Castle</p>
+        <p class="event-detail">🏃 209 Miles | 20 Stages</p>
+      </div>
+    </div>
+    <div class="sponsor-hero-image">
+      <img src="{% static 'images/Dewi.jpeg' %}" alt="Swansea Harriers Team" class="sponsor-image">
+    </div>
+  </section>
+
+  <!-- The Event Section -->
+  <section class="sponsor-section">
+    <h2 class="section-title">THE EVENT</h2>
+    <div class="section-content">
+      <p>The Welsh Castles Relay is one of the most iconic endurance relay races in the UK.</p>
+      <p>The 20-stage, 209-mile event runs from Caernarfon Castle in North Wales to Cardiff Castle in the south, with teams competing across an entire weekend through some of the toughest and most scenic stages in Wales.</p>
+      <p class="highlight">Swansea Harriers return in 2026 with one of the strongest squads the club has fielded in years.</p>
+    </div>
+    <div class="section-image">
+      <img src="{% static 'images/course_route.png' %}" alt="Welsh Castles Relay Route Map" class="sponsor-image">
+    </div>
+  </section>
+
+  <!-- The Team Section -->
+  <section class="sponsor-section sponsor-section-alt">
+    <h2 class="section-title">THE TEAM</h2>
+    <div class="team-highlights">
+      <ul class="highlights-list">
+        <li>🏆 2022 Welsh Castles Champions</li>
+        <li>📊 Multiple long-standing course records</li>
+        <li>🇬🇧 Multiple GB internationals</li>
+        <li>🏴󠁧󠁢󠁷󠁬󠁳󠁿 Multiple Welsh internationals</li>
+        <li>⚡ British Premier League athletes</li>
+        <li>📱 Strong social media visibility</li>
+        <li>🎥 YouTube creators within the squad</li>
+      </ul>
+      <p class="team-description">A blend of elite performers and emerging talent representing Swansea on one of the biggest relay stages in Britain.</p>
+    </div>
+
+  </section>
+
+  <!-- Why We Need Support Section -->
+  <section class="sponsor-section">
+    <h2 class="section-title">WHY WE NEED SUPPORT</h2>
+    <div class="section-content">
+      <p>Despite competing at elite national level, Swansea Harriers remains an amateur athletics club.</p>
+      <p>Travel, accommodation, relay logistics, and team kit are largely self-funded by athletes and volunteers.</p>
+      <p class="highlight">We are aiming to raise approximately £1000 to help support:</p>
+      <ul class="support-list">
+        <li>🏨 Team accommodation</li>
+        <li>🚗 Travel and logistics</li>
+        <li>👕 Branded relay apparel and media content</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Sponsorship Options Section -->
+  <section class="sponsor-section sponsor-packages">
+    <h2 class="section-title">SPONSORSHIP OPTIONS</h2>
+    
+    <div class="package-grid">
+      <!-- Main Sponsor -->
+      <div class="sponsor-package package-main">
+        <div class="package-header">
+          <h3 class="package-title">🔷 Main Sponsor</h3>
+          <p class="package-price">£400–£500</p>
+        </div>
+        <ul class="package-benefits">
+          <li>✓ Logo on team travel shirts</li>
+          <li>✓ Featured sponsor mention in relay coverage</li>
+          <li>✓ Sponsor inclusion in event posts/reels</li>
+          <li>✓ Team photo branding</li>
+          <li>✓ Mention in post-event coverage</li>
+        </ul>
+      </div>
+
+      <!-- Supporting Sponsor -->
+      <div class="sponsor-package package-supporting">
+        <div class="package-header">
+          <h3 class="package-title">🔹 Supporting Sponsor</h3>
+          <p class="package-price">£100–£250</p>
+        </div>
+        <ul class="package-benefits">
+          <li>✓ Sponsor mention in event coverage</li>
+          <li>✓ Logo included on sponsor graphics</li>
+          <li>✓ Mention in thank-you posts</li>
+        </ul>
+      </div>
+
+      <!-- Relay Supporter -->
+      <div class="sponsor-package package-supporter">
+        <div class="package-header">
+          <h3 class="package-title">🔸 Relay Supporter</h3>
+          <p class="package-price">Any Contribution</p>
+        </div>
+        <ul class="package-benefits">
+          <li>✓ Included on supporter graphic</li>
+          <li>✓ Mention in thank-you post</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="packages-note">Any support is hugely appreciated and directly helps Swansea Harriers compete at national level competition.</p>
+  </section>
+
+  <!-- Previous Coverage Section -->
+  <section class="sponsor-section sponsor-section-alt">
+    <h2 class="section-title">PREVIOUS WELSH CASTLES COVERAGE</h2>
+    <div class="section-content">
+      <p>See Swansea Harriers' 2022 Welsh Castles victory coverage:</p>
+      <div class="coverage-links">
+        <a href="https://www.instagram.com/reel/DYCLV5KMubf/?igsh=MTV1Zm02bXkxamZnNA==" target="_blank" class="coverage-link">📸 Watch 2022 Victory Reel</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="sponsor-cta">
+    <p class="cta-text">Supporting Swansea Harriers means supporting athletes competing at one of the highest levels of club endurance running in Britain while representing Swansea and Welsh athletics on a national stage.</p>
+    <div class="contact-info">
+      <p>📧 <a href="mailto:andrewcleverly@hotmail.com">andrewcleverly@hotmail.com</a></p>
+      <p>📱 <a href="https://instagram.com/swansea_harriers" target="_blank">@swansea_harriers</a></p>
+      <p>🌐 <a href="https://www.swanseaharriers.co.uk/upcoming-fixtures/welsh-castles-209-mile-20-stage-relay-caernarfon-to-cardiff/" target="_blank">Team Manager Info</a></p>
+    </div>
+  </section>
+</div>
+{% endblock %}
