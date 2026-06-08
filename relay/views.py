@@ -83,25 +83,18 @@ def marshalling_view(request):
 def gallery_view(request):
     """Photo and video gallery from the event."""
     from .models import MediaUpload
-    from django.db.models import Q
     
-    # Separate photos and videos
-    photos = MediaUpload.objects.filter(
-        Q(file__iendswith='.jpg') | Q(file__iendswith='.jpeg') | 
-        Q(file__iendswith='.png') | Q(file__iendswith='.gif') | 
-        Q(file__iendswith='.webp') | Q(file__iendswith='.bmp')
-    ).order_by('display_order', '-uploaded_at')
+    # Get all media uploads - let Cloudinary handle the file type
+    all_media = MediaUpload.objects.all().order_by('display_order', '-uploaded_at')
     
-    videos = MediaUpload.objects.filter(
-        Q(file__iendswith='.mp4') | Q(file__iendswith='.mov') | 
-        Q(file__iendswith='.avi') | Q(file__iendswith='.wmv') | 
-        Q(file__iendswith='.webm') | Q(file__iendswith='.mkv')
-    ).order_by('display_order', '-uploaded_at')
+    # Separate into photos and videos based on the folder path
+    photos = [m for m in all_media if '/photos/' in m.file.name]
+    videos = [m for m in all_media if '/videos/' in m.file.name]
     
     context = {
         'photos': photos,
         'videos': videos,
-        'total_count': photos.count() + videos.count()
+        'total_count': len(photos) + len(videos)
     }
     return render(request, 'relay/gallery.html', context)
 

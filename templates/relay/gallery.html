@@ -14,7 +14,7 @@
 <!-- Photos Section -->
 {% if photos %}
 <div class="gallery-section">
-  <h2 class="section-heading">📷 Photos ({{ photos.count }})</h2>
+  <h2 class="section-heading">📷 Photos ({{ photos|length }})</h2>
   <div class="gallery-grid">
     {% for item in photos %}
     <div class="gallery-item">
@@ -61,7 +61,7 @@
 <!-- Videos Section -->
 {% if videos %}
 <div class="gallery-section">
-  <h2 class="section-heading">🎥 Videos ({{ videos.count }})</h2>
+  <h2 class="section-heading">🎥 Videos ({{ videos|length }})</h2>
   <div class="gallery-grid">
     {% for item in videos %}
     <div class="gallery-item">

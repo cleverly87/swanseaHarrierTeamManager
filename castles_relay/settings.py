@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'relay',
 ]
 
@@ -125,9 +127,27 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production - collectstatic will gather files here
 
-# Media files (user uploads)
+# Cloudinary settings for media storage (images/videos)
+# Get these from https://cloudinary.com/console
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'du3w4gqa8',
+    'API_KEY': '949958675363153',
+    'API_SECRET': '8dWgsdgRmaHtW10yO6Ct6_HF5CE',
+}
+
+# Django 4.2+ storage configuration
+STORAGES = {
+    'default': {
+        'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
+
+# Media files (user uploads) - now stored on Cloudinary
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'media'  # Only used as fallback
 
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB

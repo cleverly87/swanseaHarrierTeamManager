@@ -1,5 +1,26 @@
 from decimal import Decimal
 from django.db import models
+import os
+
+
+def media_upload_path(instance, filename):
+    """Organize uploads into folders based on file type."""
+    # Get file extension
+    ext = os.path.splitext(filename)[1].lower()
+    
+    # Determine if it's a photo or video
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp']
+    video_extensions = ['.mp4', '.mov', '.avi', '.wmv', '.webm', '.mkv']
+    
+    if ext in image_extensions:
+        folder = 'photos'
+    elif ext in video_extensions:
+        folder = 'videos'
+    else:
+        folder = 'other'
+    
+    # Return path: welsh_castles_relay_2026/photos/filename.jpg
+    return f'welsh_castles_relay_2026/{folder}/{filename}'
 
 
 class Athlete(models.Model):
@@ -281,7 +302,7 @@ class ChecklistTask(models.Model):
 
 class MediaUpload(models.Model):
     """Photos and videos uploaded by athletes from the relay event."""
-    file = models.FileField(upload_to='relay_media/%Y/%m/', help_text='Upload photo or video')
+    file = models.FileField(upload_to=media_upload_path, help_text='Upload photo or video')
     title = models.CharField(max_length=200, blank=True, help_text='Optional title')
     caption = models.TextField(blank=True, help_text='Optional caption or description')
     athlete = models.ForeignKey(
@@ -324,3 +345,17 @@ class MediaUpload(models.Model):
         """Check if the file is an image based on extension."""
         image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp']
         return any(self.file.name.lower().endswith(ext) for ext in image_extensions)
+
+
+# Signal to auto-delete files from Cloudinary when model is deleted
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
+@receiver(post_delete, sender=MediaUpload)
+def delete_file_from_cloudinary(sender, instance, **kwargs):
+    """Delete file from Cloudinary when MediaUpload is deleted."""
+    if instance.file:
+        try:
+            instance.file.delete(save=False)
+        except Exception:
+            pass  # Fail silently if file doesn't exist
