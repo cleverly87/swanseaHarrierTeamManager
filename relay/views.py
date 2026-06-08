@@ -83,18 +83,69 @@ def marshalling_view(request):
 def gallery_view(request):
     """Photo and video gallery from the event."""
     from .models import MediaUpload
-    media_items = MediaUpload.objects.all().order_by('display_order', '-uploaded_at')
-    context = {'media_items': media_items}
+    from django.db.models import Q
+    
+    # Separate photos and videos
+    photos = MediaUpload.objects.filter(
+        Q(file__iendswith='.jpg') | Q(file__iendswith='.jpeg') | 
+        Q(file__iendswith='.png') | Q(file__iendswith='.gif') | 
+        Q(file__iendswith='.webp') | Q(file__iendswith='.bmp')
+    ).order_by('display_order', '-uploaded_at')
+    
+    videos = MediaUpload.objects.filter(
+        Q(file__iendswith='.mp4') | Q(file__iendswith='.mov') | 
+        Q(file__iendswith='.avi') | Q(file__iendswith='.wmv') | 
+        Q(file__iendswith='.webm') | Q(file__iendswith='.mkv')
+    ).order_by('display_order', '-uploaded_at')
+    
+    context = {
+        'photos': photos,
+        'videos': videos,
+        'total_count': photos.count() + videos.count()
+    }
     return render(request, 'relay/gallery.html', context)
 
 
 def upload_media(request):
-    """Allow athletes to upload photos and videos."""
+    """Allow athletes to upload photos and videos (bulk upload supported)."""
     from django.shortcuts import redirect
     from django.contrib import messages
+    from django.http import JsonResponse
     from .models import MediaUpload
     
     if request.method == 'POST':
+        # Check if it's a bulk upload (AJAX)
+        file_count = request.POST.get('file_count')
+        
+        if file_count:
+            try:
+                count = int(file_count)
+                uploaded = 0
+                
+                for i in range(count):
+                    file = request.FILES.get(f'file_{i}')
+                    title = request.POST.get(f'title_{i}', '')
+                    caption = request.POST.get(f'caption_{i}', '')
+                    
+                    if file:
+                        MediaUpload.objects.create(
+                            file=file,
+                            title=title,
+                            caption=caption
+                        )
+                        uploaded += 1
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': f'{uploaded} file(s) uploaded successfully!'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'success': False,
+                    'error': str(e)
+                }, status=400)
+        
+        # Single file upload (fallback)
         file = request.FILES.get('media_file')
         title = request.POST.get('title', '')
         caption = request.POST.get('caption', '')

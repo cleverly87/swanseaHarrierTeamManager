@@ -37,6 +37,7 @@ class AthleteAdmin(admin.ModelAdmin):
     search_fields = ('first_name', 'last_name', 'email', 'urn')
     list_filter = ('is_reserve', 'availability')
     actions = [export_athletes_csv]
+    ordering = ('last_name', 'first_name')
     fieldsets = (
         ('Personal Details', {
             'fields': ('first_name', 'last_name', 'date_of_birth', 'availability', 'is_reserve', 'urn', 'email', 'phone')
@@ -142,9 +143,10 @@ class StageAdmin(admin.ModelAdmin):
         'start_time', 'athlete_report_time', 'athlete', 'stage_contact', 'start_location_name'
     )
     list_filter = ('day', 'is_mountain', 'athlete')
-    search_fields = ('name', 'start_location_name', 'end_location_name')
+    search_fields = ('name', 'start_location_name', 'end_location_name', 'stage_number')
     autocomplete_fields = ['athlete', 'stage_contact']
     list_editable = ('athlete', 'stage_contact')
+    ordering = ('stage_number',)
     fieldsets = (
         ('Stage Identity', {
             'fields': ('stage_number', 'name', 'day', 'distance_miles', 'is_mountain', 'description')
@@ -215,9 +217,8 @@ class ChecklistTaskAdmin(admin.ModelAdmin):
 class MediaUploadAdmin(admin.ModelAdmin):
     list_display = ('thumbnail_preview', 'title_or_filename', 'athlete', 'stage', 'uploaded_at', 'display_order', 'file_type')
     list_editable = ('display_order',)
-    list_filter = ('stage', 'uploaded_at')
-    search_fields = ('title', 'caption')
-    autocomplete_fields = ['athlete', 'stage']
+    list_filter = ('stage', 'athlete', 'uploaded_at')
+    search_fields = ('title', 'caption', 'athlete__first_name', 'athlete__last_name')
     date_hierarchy = 'uploaded_at'
     ordering = ['display_order', '-uploaded_at']
     
@@ -226,55 +227,81 @@ class MediaUploadAdmin(admin.ModelAdmin):
             'fields': ('file', 'file_preview')
         }),
         ('Details', {
-            'fields': ('title', 'caption', 'athlete', 'stage')
+            'fields': ('title', 'caption', 'athlete', 'stage'),
+            'description': 'Add title, caption, and tag which athlete and stage this media is from.'
         }),
         ('Display Order', {
             'fields': ('display_order',),
-            'description': 'Lower numbers appear first in the gallery. Use this to organize media.'
+            'description': 'Lower numbers appear first in the gallery (0, 1, 2, etc). Change this to reorder items.'
         }),
     )
     
     readonly_fields = ('file_preview', 'uploaded_at')
     
+    # Use regular dropdowns instead of autocomplete for easier selection
+    raw_id_fields = []
+    
     def thumbnail_preview(self, obj):
         """Show small thumbnail in list view."""
-        if obj.is_image:
-            return format_html(
-                '<img src="{}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />',
-                obj.file.url
-            )
-        elif obj.is_video:
-            return format_html('<span style="font-size: 2rem;">🎥</span>')
-        return format_html('<span style="font-size: 2rem;">📎</span>')
+        if not obj.file:
+            return '—'
+        try:
+            if obj.is_image:
+                return format_html(
+                    '<img src="{}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />',
+                    obj.file.url
+                )
+            elif obj.is_video:
+                return mark_safe('<span style="font-size: 2rem;">🎥</span>')
+            return mark_safe('<span style="font-size: 2rem;">📎</span>')
+        except:
+            return '—'
     thumbnail_preview.short_description = 'Preview'
     
     def file_preview(self, obj):
         """Show larger preview in detail view."""
-        if obj.is_image:
-            return format_html(
-                '<img src="{}" style="max-width: 400px; max-height: 400px; border-radius: 8px;" />',
-                obj.file.url
-            )
-        elif obj.is_video:
-            return format_html(
-                '<video controls style="max-width: 400px; max-height: 400px;"><source src="{}" type="video/mp4"></video>',
-                obj.file.url
-            )
-        return format_html('<a href="{}" target="_blank">View File</a>', obj.file.url)
+        if not obj.file:
+            return '—'
+        try:
+            if obj.is_image:
+                return format_html(
+                    '<img src="{}" style="max-width: 400px; max-height: 400px; border-radius: 8px;" />',
+                    obj.file.url
+                )
+            elif obj.is_video:
+                return format_html(
+                    '<video controls style="max-width: 400px; max-height: 400px;"><source src="{}" type="video/mp4"></video>',
+                    obj.file.url
+                )
+            return format_html('<a href="{}" target="_blank">View File</a>', obj.file.url)
+        except:
+            return '—'
     file_preview.short_description = 'File Preview'
     
     def title_or_filename(self, obj):
         """Display title if set, otherwise filename."""
+        if not obj:
+            return '—'
         if obj.title:
             return obj.title
-        return obj.file.name.split('/')[-1]
+        if obj.file:
+            try:
+                return obj.file.name.split('/')[-1]
+            except:
+                return '—'
+        return '—'
     title_or_filename.short_description = 'Title/Filename'
     
     def file_type(self, obj):
         """Show file type badge."""
-        if obj.is_image:
-            return format_html('<span style="color: #27ae60; font-weight: bold;">🖼 Image</span>')
-        elif obj.is_video:
-            return format_html('<span style="color: #3498db; font-weight: bold;">🎥 Video</span>')
-        return format_html('<span style="color: #95a5a6;">📎 File</span>')
+        if not obj or not obj.file:
+            return '—'
+        try:
+            if obj.is_image:
+                return mark_safe('<span style="color: #27ae60; font-weight: bold;">🖼 Image</span>')
+            elif obj.is_video:
+                return mark_safe('<span style="color: #3498db; font-weight: bold;">🎥 Video</span>')
+            return mark_safe('<span style="color: #95a5a6;">📎 File</span>')
+        except:
+            return '—'
     file_type.short_description = 'Type'
