@@ -112,6 +112,7 @@ def upload_media(request):
     from django.contrib import messages
     from django.http import JsonResponse
     from .models import MediaUpload
+    import json
     
     if request.method == 'POST':
         # Check if it's a bulk upload (AJAX)
@@ -121,6 +122,7 @@ def upload_media(request):
             try:
                 count = int(file_count)
                 uploaded = 0
+                errors = []
                 
                 for i in range(count):
                     file = request.FILES.get(f'file_{i}')
@@ -128,35 +130,49 @@ def upload_media(request):
                     caption = request.POST.get(f'caption_{i}', '')
                     
                     if file:
-                        MediaUpload.objects.create(
-                            file=file,
-                            title=title,
-                            caption=caption
-                        )
-                        uploaded += 1
+                        try:
+                            MediaUpload.objects.create(
+                                file=file,
+                                title=title,
+                                caption=caption
+                            )
+                            uploaded += 1
+                        except Exception as e:
+                            errors.append(f"File {i}: {str(e)}")
                 
-                return JsonResponse({
-                    'success': True,
-                    'message': f'{uploaded} file(s) uploaded successfully!'
-                })
+                if uploaded > 0:
+                    return JsonResponse({
+                        'success': True,
+                        'message': f'{uploaded} file(s) uploaded successfully!',
+                        'errors': errors if errors else None
+                    })
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'No files were uploaded. ' + ('; '.join(errors) if errors else '')
+                    }, status=400)
+                    
             except Exception as e:
                 return JsonResponse({
                     'success': False,
-                    'error': str(e)
+                    'error': f'Upload error: {str(e)}'
                 }, status=400)
         
-        # Single file upload (fallback)
+        # Single file upload (fallback) - for non-JavaScript uploads
         file = request.FILES.get('media_file')
         title = request.POST.get('title', '')
         caption = request.POST.get('caption', '')
         
         if file:
-            MediaUpload.objects.create(
-                file=file,
-                title=title,
-                caption=caption
-            )
-            messages.success(request, 'Your media has been uploaded successfully!')
+            try:
+                MediaUpload.objects.create(
+                    file=file,
+                    title=title,
+                    caption=caption
+                )
+                messages.success(request, 'Your media has been uploaded successfully!')
+            except Exception as e:
+                messages.error(request, f'Upload failed: {str(e)}')
             return redirect('relay:gallery')
         else:
             messages.error(request, 'Please select a file to upload.')

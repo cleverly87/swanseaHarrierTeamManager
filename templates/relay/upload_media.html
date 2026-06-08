@@ -342,7 +342,8 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
   const formData = new FormData();
-  formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  formData.append('csrfmiddlewaretoken', csrfToken);
   
   selectedFiles.forEach((file, index) => {
     formData.append(`file_${index}`, file);
@@ -360,9 +361,20 @@ document.getElementById('uploadForm').addEventListener('submit', function(e) {
   
   fetch('{% url "relay:upload_media" %}', {
     method: 'POST',
-    body: formData
+    body: formData,
+    headers: {
+      'X-CSRFToken': csrfToken
+    },
+    credentials: 'same-origin'
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(data => {
+        throw new Error(data.error || 'Upload failed');
+      });
+    }
+    return response.json();
+  })
   .then(data => {
     if (data.success) {
       window.location.href = '{% url "relay:gallery" %}';
