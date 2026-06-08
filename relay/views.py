@@ -80,6 +80,36 @@ def marshalling_view(request):
     return render(request, 'relay/marshalling.html')
 
 
-def sponsorship_view(request):
-    """Sponsorship pitch page for Welsh Castles Relay 2026."""
-    return render(request, 'relay/sponsorship.html')
+def gallery_view(request):
+    """Photo and video gallery from the event."""
+    from .models import MediaUpload
+    media_items = MediaUpload.objects.all().order_by('display_order', '-uploaded_at')
+    context = {'media_items': media_items}
+    return render(request, 'relay/gallery.html', context)
+
+
+def upload_media(request):
+    """Allow athletes to upload photos and videos."""
+    from django.shortcuts import redirect
+    from django.contrib import messages
+    from .models import MediaUpload
+    
+    if request.method == 'POST':
+        file = request.FILES.get('media_file')
+        title = request.POST.get('title', '')
+        caption = request.POST.get('caption', '')
+        
+        if file:
+            MediaUpload.objects.create(
+                file=file,
+                title=title,
+                caption=caption
+            )
+            messages.success(request, 'Your media has been uploaded successfully!')
+            return redirect('relay:gallery')
+        else:
+            messages.error(request, 'Please select a file to upload.')
+    
+    athletes = Athlete.objects.all().order_by('last_name', 'first_name')
+    stages = Stage.objects.all().order_by('stage_number')
+    return render(request, 'relay/upload_media.html', {'athletes': athletes, 'stages': stages})

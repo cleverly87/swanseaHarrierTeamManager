@@ -36,6 +36,7 @@
         <a href="{% url 'relay:accommodation' %}" class="nav-link {% if request.resolver_match.url_name == 'accommodation' %}active{% endif %}">Accommodation</a>
         <a href="{% url 'relay:marshalling' %}" class="nav-link {% if request.resolver_match.url_name == 'marshalling' %}active{% endif %}">Marshalling</a>
         <a href="{% url 'relay:checklist' %}" class="nav-link {% if request.resolver_match.url_name == 'checklist' %}active{% endif %}">Checklist</a>
+        <a href="{% url 'relay:gallery' %}" class="nav-link {% if request.resolver_match.url_name == 'gallery' or request.resolver_match.url_name == 'upload_media' %}active{% endif %}">Gallery</a>
         <a href="/admin/" class="nav-link nav-admin">⚙ Admin</a>
       </nav>
     </div>

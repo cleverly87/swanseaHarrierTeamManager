@@ -277,3 +277,50 @@ class ChecklistTask(models.Model):
     def __str__(self):
         status = '✓' if self.completed else '○'
         return f"[{status}] {self.title}"
+
+
+class MediaUpload(models.Model):
+    """Photos and videos uploaded by athletes from the relay event."""
+    file = models.FileField(upload_to='relay_media/%Y/%m/', help_text='Upload photo or video')
+    title = models.CharField(max_length=200, blank=True, help_text='Optional title')
+    caption = models.TextField(blank=True, help_text='Optional caption or description')
+    athlete = models.ForeignKey(
+        Athlete,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='media_uploads',
+        help_text='Athlete who uploaded or is featured'
+    )
+    stage = models.ForeignKey(
+        Stage,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='media_uploads',
+        help_text='Stage this media is from'
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    display_order = models.IntegerField(default=0, help_text='Lower numbers appear first (use for sorting)')
+
+    class Meta:
+        ordering = ['display_order', '-uploaded_at']
+        verbose_name = 'Media Upload'
+        verbose_name_plural = 'Media Uploads'
+
+    def __str__(self):
+        if self.title:
+            return self.title
+        return f"Media uploaded {self.uploaded_at.strftime('%Y-%m-%d %H:%M')}"
+
+    @property
+    def is_video(self):
+        """Check if the file is a video based on extension."""
+        video_extensions = ['.mp4', '.mov', '.avi', '.wmv', '.webm', '.mkv']
+        return any(self.file.name.lower().endswith(ext) for ext in video_extensions)
+
+    @property
+    def is_image(self):
+        """Check if the file is an image based on extension."""
+        image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp']
+        return any(self.file.name.lower().endswith(ext) for ext in image_extensions)

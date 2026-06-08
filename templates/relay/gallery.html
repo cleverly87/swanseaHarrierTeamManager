@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Photo & Video Gallery – Welsh Castles Relay{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Photo & Video Gallery</h1>
+  <p class="page-intro">Memories from the Welsh Castles Relay 2026</p>
+  <a href="{% url 'relay:upload_media' %}" class="btn btn-primary">📤 Upload Your Photos/Videos</a>
+</div>
+
+{% if media_items %}
+<div class="gallery-grid">
+  {% for item in media_items %}
+  <div class="gallery-item">
+    {% if item.is_image %}
+      <div class="gallery-image">
+        <img src="{{ item.file.url }}" alt="{{ item.title|default:'Gallery image' }}" loading="lazy">
+      </div>
+    {% elif item.is_video %}
+      <div class="gallery-video">
+        <video controls preload="metadata">
+          <source src="{{ item.file.url }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    {% else %}
+      <div class="gallery-file">
+        <a href="{{ item.file.url }}" target="_blank">📎 {{ item.file.name }}</a>
+      </div>
+    {% endif %}
+    
+    {% if item.title or item.caption or item.athlete or item.stage %}
+    <div class="gallery-info">
+      {% if item.title %}
+        <h3 class="gallery-title">{{ item.title }}</h3>
+      {% endif %}
+      {% if item.caption %}
+        <p class="gallery-caption">{{ item.caption }}</p>
+      {% endif %}
+      {% if item.athlete %}
+        <p class="gallery-meta">👤 {{ item.athlete }}</p>
+      {% endif %}
+      {% if item.stage %}
+        <p class="gallery-meta">📍 Stage {{ item.stage.stage_number }}: {{ item.stage.name }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>No photos or videos have been uploaded yet.</p>
+  <p><a href="{% url 'relay:upload_media' %}" class="btn btn-primary">Be the first to upload!</a></p>
+</div>
+{% endif %}
+
+<style>
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-intro {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 1rem 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: #c41e3a;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #a01729;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.gallery-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gallery-image img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-video video {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+.gallery-file {
+  padding: 2rem;
+  text-align: center;
+  background: #f5f5f5;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-file a {
+  font-size: 1.2rem;
+  color: #c41e3a;
+  text-decoration: none;
+}
+
+.gallery-info {
+  padding: 1rem;
+}
+
+.gallery-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.gallery-caption {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.gallery-meta {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0.25rem 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}

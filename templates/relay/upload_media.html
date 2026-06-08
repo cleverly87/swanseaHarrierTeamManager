@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Photos & Videos – Welsh Castles Relay{% endblock %}
+
+{% block content %}
+<div class="upload-page">
+  <div class="page-header">
+    <h1>Upload Your Photos & Videos</h1>
+    <p class="page-intro">Share your memories from the Welsh Castles Relay 2026</p>
+    <a href="{% url 'relay:gallery' %}" class="btn btn-secondary">← Back to Gallery</a>
+  </div>
+
+  <div class="upload-form-container">
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="media_file" class="required">Select Photo or Video</label>
+        <input type="file" id="media_file" name="media_file" required 
+               accept="image/*,video/*">
+        <p class="form-help">Accepted formats: JPG, PNG, GIF, MP4, MOV, AVI, WebM</p>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Title (Optional)</label>
+        <input type="text" id="title" name="title" maxlength="200" 
+               placeholder="e.g., Stage 5 Summit">
+        <p class="form-help">Give your upload a descriptive title</p>
+      </div>
+
+      <div class="form-group">
+        <label for="caption">Caption/Description (Optional)</label>
+        <textarea id="caption" name="caption" rows="4" 
+                  placeholder="e.g., Beautiful view from the top of Pen-y-Gwryd. Perfect weather for running!"></textarea>
+        <p class="form-help">Add details about the photo/video, location, or what's happening</p>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">📤 Upload</button>
+        <a href="{% url 'relay:gallery' %}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="upload-tips">
+    <h2>Upload Tips</h2>
+    <ul>
+      <li>✓ Photos and videos will be visible to everyone viewing the gallery</li>
+      <li>✓ Title and caption are optional but help others understand your upload</li>
+      <li>✓ As an admin, you can organize and reorder media in the admin panel</li>
+      <li>✓ Large video files may take a few minutes to upload</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+.upload-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-intro {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 1rem 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #c41e3a;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #a01729;
+}
+
+.btn-secondary {
+  background: #666;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #555;
+}
+
+.upload-form-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.upload-form {
+  max-width: 100%;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.form-group label.required::after {
+  content: " *";
+  color: #c41e3a;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group input[type="file"] {
+  padding: 0.5rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-help {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0.5rem 0 0 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.upload-tips {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #c41e3a;
+}
+
+.upload-tips h2 {
+  font-size: 1.3rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.upload-tips ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.upload-tips li {
+  padding: 0.5rem 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .upload-form-container {
+    padding: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+</style>
+{% endblock %}
