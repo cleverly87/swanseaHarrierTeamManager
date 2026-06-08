@@ -11,7 +11,9 @@
   </div>
 
   <div class="upload-form-container">
-    <div id="uploadForm" class="upload-form">
+    <form method="post" enctype="multipart/form-data" id="uploadForm" class="upload-form">
+      {% csrf_token %}
+      
       <div class="form-group">
         <label for="media_files" class="required">Select Photos or Videos</label>
         <input type="file" id="media_files" name="media_files" multiple required 
@@ -22,19 +24,10 @@
       <div id="previews-container"></div>
 
       <div class="form-actions" id="uploadActions" style="display: none;">
-        <button type="button" id="uploadBtn" class="btn btn-primary">📤 Upload All</button>
+        <button type="submit" class="btn btn-primary">📤 Upload All</button>
         <button type="button" class="btn btn-secondary" onclick="clearFiles()">Clear All</button>
       </div>
-      
-      <div id="uploadProgress" style="display: none; margin-top: 1rem;">
-        <div style="background: #f0f0f0; border-radius: 8px; padding: 1rem;">
-          <div id="progressText" style="margin-bottom: 0.5rem; font-weight: 600;">Uploading...</div>
-          <div style="background: #ddd; height: 24px; border-radius: 12px; overflow: hidden;">
-            <div id="progressBar" style="background: #c41e3a; height: 100%; width: 0%; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.85rem; font-weight: 600;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </form>
   </div>
 
   <div class="upload-tips">
@@ -43,9 +36,13 @@
       <li>✓ Select multiple files at once for faster uploading</li>
       <li>✓ Title and caption are optional but help others understand your upload</li>
       <li>✓ Preview your files before uploading to make sure they're correct</li>
+      <li>✓ As an admin, you can organize and reorder media in the admin panel</li>
       <li>✓ Large video files may take a few minutes to upload</li>
     </ul>
   </div>
+  
+  <!-- Debug log for mobile troubleshooting -->
+  <div id="debug-log" style="display: none; background: #f0f0f0; padding: 1rem; margin-top: 1rem; border-radius: 4px; font-family: monospace; font-size: 0.8rem; max-height: 300px; overflow: auto; white-space: pre-wrap; word-break: break-all;"></div>
 </div>
 
 <style>
@@ -81,13 +78,8 @@
   color: white;
 }
 
-.btn-primary:hover:not(:disabled) {
+.btn-primary:hover {
   background: #a01729;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .btn-secondary {
@@ -107,6 +99,10 @@
   margin-bottom: 2rem;
 }
 
+.upload-form {
+  max-width: 100%;
+}
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -123,12 +119,19 @@
   color: #c41e3a;
 }
 
-.form-group input[type="file"] {
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group textarea {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group input[type="file"] {
+  padding: 0.5rem;
 }
 
 .form-help {
@@ -259,15 +262,21 @@
 </style>
 
 <script>
-const CLOUDINARY_CLOUD_NAME = 'du3w4gqa8';
-const CLOUDINARY_UPLOAD_PRESET_PHOTOS = 'Welsh Castles Relay';  
-const CLOUDINARY_UPLOAD_PRESET_VIDEOS = 'welsh_castles_relay_videos';
-
 let selectedFiles = [];
+
+// Debug logging function
+function debugLog(message) {
+  console.log(message);
+  const debugDiv = document.getElementById('debug-log');
+  debugDiv.style.display = 'block';
+  debugDiv.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+  debugDiv.scrollTop = debugDiv.scrollHeight;
+}
 
 document.getElementById('media_files').addEventListener('change', function(e) {
   const files = Array.from(e.target.files);
   selectedFiles = files;
+  debugLog(`Selected ${files.length} file(s)`);
   displayPreviews();
   document.getElementById('uploadActions').style.display = 'flex';
 });
@@ -342,121 +351,88 @@ function clearFiles() {
   document.getElementById('media_files').value = '';
 }
 
-async function uploadToCloudinary(file) {
-  const fileType = file.type.split('/')[0];
-  const isVideo = fileType === 'video';
-  const uploadPreset = isVideo ? CLOUDINARY_UPLOAD_PRESET_VIDEOS : CLOUDINARY_UPLOAD_PRESET_PHOTOS;
-  const resourceType = isVideo ? 'video' : 'image';
-  const folder = isVideo ? 'welsh_castles_relay_2026/videos' : 'welsh_castles_relay_2026/photos';
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+  e.preventDefault();
   
   const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', uploadPreset);
-  formData.append('folder', folder);  // Explicitly set the folder
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  formData.append('csrfmiddlewaretoken', csrfToken);
   
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`,
-    {
-      method: 'POST',
-      body: formData
-    }
-  );
+  debugLog(`Starting upload with ${selectedFiles.length} file(s)`);
   
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Cloudinary upload failed: ${error}`);
-  }
-  
-  return await response.json();
-}
-
-async function saveToDatabase(uploads) {
-  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                    document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
-  
-  const response = await fetch('{% url "relay:save_cloudinary_upload" %}', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrfToken
-    },
-    body: JSON.stringify({ uploads })
+  selectedFiles.forEach((file, index) => {
+    formData.append(`file_${index}`, file);
+    const title = document.querySelector(`input[name="title_${index}"]`)?.value || '';
+    const caption = document.querySelector(`textarea[name="caption_${index}"]`)?.value || '';
+    formData.append(`title_${index}`, title);
+    formData.append(`caption_${index}`, caption);
+    debugLog(`File ${index}: ${file.name} (${file.type}, ${(file.size/1024/1024).toFixed(2)}MB)`);
   });
   
-  if (!response.ok) {
-    throw new Error('Failed to save uploads to database');
-  }
+  formData.append('file_count', selectedFiles.length);
   
-  return await response.json();
-}
-
-document.getElementById('uploadBtn').addEventListener('click', async function() {
-  if (selectedFiles.length === 0) return;
+  const submitBtn = this.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = '⏳ Uploading...';
   
-  const uploadBtn = this;
-  const progressDiv = document.getElementById('uploadProgress');
-  const progressText = document.getElementById('progressText');
-  const progressBar = document.getElementById('progressBar');
+  debugLog('Sending request...');
   
-  uploadBtn.disabled = true;
-  progressDiv.style.display = 'block';
-  
-  try {
-    const uploads = [];
+  fetch('{% url "relay:upload_media" %}', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-CSRFToken': csrfToken
+    },
+    credentials: 'same-origin'
+  })
+  .then(response => {
+    debugLog(`Response status: ${response.status} ${response.statusText}`);
     
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-      const title = document.querySelector(`input[name="title_${i}"]`)?.value || '';
-      const caption = document.querySelector(`textarea[name="caption_${i}"]`)?.value || '';
+    // Get response text first to see what we're dealing with
+    return response.text().then(text => {
+      debugLog(`Response length: ${text.length} characters`);
+      debugLog(`Response preview: ${text.substring(0, 100)}...`);
       
-      progressText.textContent = `Uploading ${i + 1} of ${selectedFiles.length}: ${file.name}`;
-      const percent = Math.round(((i) / selectedFiles.length) * 100);
-      progressBar.style.width = percent + '%';
-      progressBar.textContent = percent + '%';
-      
+      // Try to parse as JSON
       try {
-        const cloudinaryResponse = await uploadToCloudinary(file);
-        
-        console.log('Full Cloudinary response:', JSON.stringify(cloudinaryResponse, null, 2));
-        console.log('Public ID:', cloudinaryResponse.public_id);
-        console.log('Secure URL:', cloudinaryResponse.secure_url);
-        
-        // Just use the public_id as-is from Cloudinary
-        uploads.push({
-          cloudinary_url: cloudinaryResponse.secure_url,
-          cloudinary_public_id: cloudinaryResponse.public_id,
-          title: title,
-          caption: caption,
-          file_type: file.type.split('/')[0]
-        });
-        
-      } catch (error) {
-        console.error(`Failed to upload ${file.name}:`, error);
-        alert(`Failed to upload ${file.name}: ${error.message}`);
+        const data = JSON.parse(text);
+        if (!response.ok) {
+          throw new Error(data.error || 'Upload failed with status ' + response.status);
+        }
+        return data;
+      } catch (e) {
+        // If not JSON, show the HTML error
+        debugLog(`JSON parse error: ${e.message}`);
+        throw new Error('Server returned HTML instead of JSON. First 200 chars: ' + text.substring(0, 200));
       }
-    }
-    
-    if (uploads.length > 0) {
-      progressText.textContent = 'Saving to database...';
-      progressBar.style.width = '100%';
-      progressBar.textContent = '100%';
-      
-      await saveToDatabase(uploads);
-      
-      // Success - redirect to gallery
+    });
+  })
+  .then(data => {
+    debugLog('Upload successful!');
+    if (data.success) {
       window.location.href = '{% url "relay:gallery" %}';
     } else {
-      throw new Error('No files were successfully uploaded');
+      throw new Error(data.error || 'Unknown error');
     }
+  })
+  .catch(error => {
+    debugLog(`ERROR: ${error.message}`);
+    const errorMsg = 'Upload failed: ' + error.message;
     
-  } catch (error) {
-    console.error('Upload error:', error);
-    alert('Upload failed: ' + error.message);
-    uploadBtn.disabled = false;
-    progressDiv.style.display = 'none';
-  }
+    // Show error in a better format for mobile
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 3px solid #c41e3a; border-radius: 8px; z-index: 10000; max-width: 90%; max-height: 80%; overflow: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3);';
+    errorDiv.innerHTML = `
+      <h3 style="color: #c41e3a; margin-top: 0;">Upload Failed</h3>
+      <p style="word-break: break-all; white-space: pre-wrap; font-size: 0.9rem;">${error.message}</p>
+      <p style="font-size: 0.8rem; color: #666; margin-top: 15px;">Check the debug log below for more details.</p>
+      <button onclick="this.parentElement.remove()" style="background: #c41e3a; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 1rem;">Close</button>
+    `;
+    document.body.appendChild(errorDiv);
+    
+    submitBtn.disabled = false;
+    submitBtn.textContent = '📤 Upload All';
+  });
 });
 </script>
-
-{% csrf_token %}
 {% endblock %}

@@ -133,6 +133,7 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'du3w4gqa8',
     'API_KEY': '949958675363153',
     'API_SECRET': '8dWgsdgRmaHtW10yO6Ct6_HF5CE',
+    'PREFIX': '',  # Don't add 'media/' prefix to Cloudinary paths
 }
 
 # Django 4.2+ storage configuration

@@ -356,6 +356,13 @@ def delete_file_from_cloudinary(sender, instance, **kwargs):
     """Delete file from Cloudinary when MediaUpload is deleted."""
     if instance.file:
         try:
+            # Try the standard Django way first (works for old uploads)
             instance.file.delete(save=False)
         except Exception:
-            pass  # Fail silently if file doesn't exist
+            # For direct browser uploads, use Cloudinary API directly
+            try:
+                import cloudinary.uploader
+                # file.name contains the public_id
+                cloudinary.uploader.destroy(instance.file.name)
+            except Exception:
+                pass  # Fail silently if file doesn't exist

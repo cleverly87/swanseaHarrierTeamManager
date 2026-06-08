@@ -173,3 +173,74 @@ def upload_media(request):
     athletes = Athlete.objects.all().order_by('last_name', 'first_name')
     stages = Stage.objects.all().order_by('stage_number')
     return render(request, 'relay/upload_media.html', {'athletes': athletes, 'stages': stages})
+
+
+def save_cloudinary_upload(request):
+    """Save Cloudinary upload URLs to database (for direct browser uploads)."""
+    from django.http import JsonResponse
+    from django.views.decorators.csrf import csrf_exempt
+    from .models import MediaUpload
+    from django.core.files.base import ContentFile
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        uploads = data.get('uploads', [])
+        
+        print(f"DEBUG: Received {len(uploads)} uploads")
+        
+        if not uploads:
+            return JsonResponse({'error': 'No uploads provided'}, status=400)
+        
+        saved_count = 0
+        for upload_data in uploads:
+            cloudinary_url = upload_data.get('cloudinary_url')
+            public_id = upload_data.get('cloudinary_public_id')
+            title = upload_data.get('title', '')
+            caption = upload_data.get('caption', '')
+            file_type = upload_data.get('file_type', 'image')
+            
+            print(f"DEBUG: Processing upload - public_id: {public_id}, file_type: {file_type}")
+            print(f"DEBUG: cloudinary_url: {cloudinary_url}")
+            
+            if not public_id:
+                continue
+            
+            # The public_id should now include the folder path since we set it explicitly
+            # But if it doesn't, extract from URL or construct it
+            if 'welsh_castles_relay_2026' not in public_id:
+                if cloudinary_url and 'welsh_castles_relay_2026' in cloudinary_url:
+                    # Extract the path from the URL
+                    import re
+                    match = re.search(r'upload/v\d+/(.+?)(?:\.[^.]+)?$', cloudinary_url)
+                    if match:
+                        public_id = match.group(1)
+                        print(f"DEBUG: Extracted from URL: {public_id}")
+                else:
+                    # Construct the path manually
+                    folder = 'photos' if file_type == 'image' else 'videos'
+                    public_id = f'welsh_castles_relay_2026/{folder}/{public_id}'
+                    print(f"DEBUG: Constructed path: {public_id}")
+            
+            media = MediaUpload()
+            media.file.name = public_id
+            media.title = title
+            media.caption = caption
+            media.save()
+            
+            print(f"DEBUG: Saved with file.name: {media.file.name}")
+            
+            saved_count += 1
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{saved_count} file(s) saved successfully!'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Save error: {str(e)}'}, status=500)

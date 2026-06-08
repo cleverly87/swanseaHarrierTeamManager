@@ -12,4 +12,5 @@ urlpatterns = [
     path('checklist/', views.checklist_view, name='checklist'),
     path('gallery/', views.gallery_view, name='gallery'),
     path('gallery/upload/', views.upload_media, name='upload_media'),
+    path('gallery/save-cloudinary/', views.save_cloudinary_upload, name='save_cloudinary_upload'),
 ]
