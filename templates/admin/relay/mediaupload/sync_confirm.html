@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 50px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+  <h1 style="color: #417690; margin-top: 0;">🔄 Sync from Cloudinary</h1>
+  
+  <p style="font-size: 1.1em; line-height: 1.6; color: #333;">
+    This will check Cloudinary for any new photos or videos in:
+  </p>
+  
+  <ul style="background: #f8f9fa; padding: 20px; border-radius: 4px; margin: 20px 0;">
+    <li style="margin: 10px 0;"><code>welsh_castles_relay_2026/photos/</code></li>
+    <li style="margin: 10px 0;"><code>welsh_castles_relay_2026/videos/</code></li>
+  </ul>
+  
+  <p style="color: #666; font-size: 0.95em;">
+    Any files not already in the database will be imported automatically.
+  </p>
+  
+  <form method="post" style="margin-top: 30px;">
+    {% csrf_token %}
+    <button type="submit" style="background-color: #417690; color: white; padding: 12px 24px; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; margin-right: 10px;">
+      ✓ Sync Now
+    </button>
+    <a href="{% url 'admin:relay_mediaupload_changelist' %}" style="padding: 12px 24px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; display: inline-block;">
+      Cancel
+    </a>
+  </form>
+</div>
+{% endblock %}

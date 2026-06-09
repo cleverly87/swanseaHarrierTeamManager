@@ -302,7 +302,13 @@ class ChecklistTask(models.Model):
 
 class MediaUpload(models.Model):
     """Photos and videos uploaded by athletes from the relay event."""
+    MEDIA_TYPE_CHOICES = [
+        ('image', 'Photo'),
+        ('video', 'Video'),
+    ]
+    
     file = models.FileField(upload_to=media_upload_path, help_text='Upload photo or video')
+    media_type = models.CharField(max_length=10, choices=MEDIA_TYPE_CHOICES, default='image', help_text='Type of media (set automatically during sync)')
     title = models.CharField(max_length=200, blank=True, help_text='Optional title')
     caption = models.TextField(blank=True, help_text='Optional caption or description')
     athlete = models.ForeignKey(
@@ -335,16 +341,26 @@ class MediaUpload(models.Model):
         return f"Media uploaded {self.uploaded_at.strftime('%Y-%m-%d %H:%M')}"
 
     @property
+    def cloudinary_url(self):
+        """Generate the correct Cloudinary URL based on media type."""
+        from django.conf import settings
+        cloud_name = settings.CLOUDINARY_STORAGE['CLOUD_NAME']
+        public_id = self.file.name
+        
+        if self.media_type == 'video':
+            return f"https://res.cloudinary.com/{cloud_name}/video/upload/{public_id}"
+        else:  # image
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+    
+    @property
     def is_video(self):
-        """Check if the file is a video based on extension."""
-        video_extensions = ['.mp4', '.mov', '.avi', '.wmv', '.webm', '.mkv']
-        return any(self.file.name.lower().endswith(ext) for ext in video_extensions)
+        """Check if the file is a video based on media_type field."""
+        return self.media_type == 'video'
 
     @property
     def is_image(self):
-        """Check if the file is an image based on extension."""
-        image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp']
-        return any(self.file.name.lower().endswith(ext) for ext in image_extensions)
+        """Check if the file is an image based on media_type field."""
+        return self.media_type == 'image'
 
 
 # Signal to auto-delete files from Cloudinary when model is deleted

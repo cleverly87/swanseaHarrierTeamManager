@@ -19,7 +19,7 @@
     {% for item in photos %}
     <div class="gallery-item">
       <div class="gallery-image" onclick="openLightbox('photo', {{ forloop.counter0 }})">
-        <img src="{{ item.file.url }}" alt="{{ item.title|default:'Gallery image' }}" loading="lazy" data-index="{{ forloop.counter0 }}" data-type="photo">
+        <img src="{{ item.cloudinary_url }}" alt="{{ item.title|default:'Gallery image' }}" loading="lazy" data-index="{{ forloop.counter0 }}" data-type="photo">
       </div>
       
       {% if item.title or item.caption or item.athlete or item.stage %}
@@ -38,7 +38,7 @@
         {% endif %}
         
         <div class="gallery-actions">
-          <a href="{{ item.file.url }}" download class="btn-download" title="Download">
+          <a href="{{ item.cloudinary_url }}" download class="btn-download" title="Download">
             ⬇ Download
           </a>
         </div>
@@ -46,7 +46,7 @@
       {% else %}
       <div class="gallery-info">
         <div class="gallery-actions">
-          <a href="{{ item.file.url }}" download class="btn-download" title="Download">
+          <a href="{{ item.cloudinary_url }}" download class="btn-download" title="Download">
             ⬇ Download
           </a>
         </div>
@@ -66,8 +66,8 @@
     {% for item in videos %}
     <div class="gallery-item">
       <div class="gallery-video" onclick="openLightbox('video', {{ forloop.counter0 }})">
-        <video preload="metadata" data-index="{{ forloop.counter0 }}" data-type="video" data-src="{{ item.file.url }}">
-          <source src="{{ item.file.url }}" type="video/mp4">
+        <video preload="metadata" data-index="{{ forloop.counter0 }}" data-type="video" data-src="{{ item.cloudinary_url }}">
+          <source src="{{ item.cloudinary_url }}" type="video/mp4">
           Your browser does not support the video tag.
         </video>
         <div class="play-overlay">▶</div>
@@ -89,7 +89,7 @@
         {% endif %}
         
         <div class="gallery-actions">
-          <a href="{{ item.file.url }}" download class="btn-download" title="Download">
+          <a href="{{ item.cloudinary_url }}" download class="btn-download" title="Download">
             ⬇ Download
           </a>
         </div>
@@ -97,7 +97,7 @@
       {% else %}
       <div class="gallery-info">
         <div class="gallery-actions">
-          <a href="{{ item.file.url }}" download class="btn-download" title="Download">
+          <a href="{{ item.cloudinary_url }}" download class="btn-download" title="Download">
             ⬇ Download
           </a>
         </div>

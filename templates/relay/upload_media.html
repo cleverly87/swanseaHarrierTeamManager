@@ -374,6 +374,9 @@ async function saveToDatabase(uploads) {
   const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
                     document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
   
+  console.log('Saving to database, CSRF token:', csrfToken ? 'Found' : 'NOT FOUND');
+  console.log('Uploads to save:', uploads);
+  
   const response = await fetch('{% url "relay:save_cloudinary_upload" %}', {
     method: 'POST',
     headers: {
@@ -383,11 +386,17 @@ async function saveToDatabase(uploads) {
     body: JSON.stringify({ uploads })
   });
   
+  console.log('Save response status:', response.status);
+  
   if (!response.ok) {
-    throw new Error('Failed to save uploads to database');
+    const errorText = await response.text();
+    console.error('Save failed with response:', errorText);
+    throw new Error(`Failed to save uploads to database: ${response.status} - ${errorText.substring(0, 200)}`);
   }
   
-  return await response.json();
+  const result = await response.json();
+  console.log('Save result:', result);
+  return result;
 }
 
 document.getElementById('uploadBtn').addEventListener('click', async function() {
@@ -441,19 +450,37 @@ document.getElementById('uploadBtn').addEventListener('click', async function() 
       progressBar.style.width = '100%';
       progressBar.textContent = '100%';
       
-      await saveToDatabase(uploads);
-      
-      // Success - redirect to gallery
-      window.location.href = '{% url "relay:gallery" %}';
+      try {
+        const result = await saveToDatabase(uploads);
+        
+        // Show confirmation before redirect
+        alert(`Success! Saved ${result.message}. Redirecting to gallery...`);
+        
+        // Success - redirect to gallery
+        window.location.href = '{% url "relay:gallery" %}';
+      } catch (saveError) {
+        console.error('Database save error:', saveError);
+        throw new Error(`Files uploaded to Cloudinary but failed to save to database: ${saveError.message}`);
+      }
     } else {
       throw new Error('No files were successfully uploaded');
     }
     
   } catch (error) {
     console.error('Upload error:', error);
+    
+    // Show error on page in addition to alert
+    progressDiv.innerHTML = `
+      <div style="background: #ffebee; border: 2px solid #c41e3a; border-radius: 8px; padding: 1.5rem; margin-top: 1rem;">
+        <h3 style="color: #c41e3a; margin-top: 0;">❌ Upload Failed</h3>
+        <p style="margin: 0.5rem 0; word-break: break-word;"><strong>Error:</strong> ${error.message}</p>
+        <p style="margin: 0.5rem 0; font-size: 0.9rem; color: #666;">Check the browser console (F12) for more details.</p>
+        <button onclick="location.reload()" style="background: #c41e3a; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; margin-top: 1rem;">Try Again</button>
+      </div>
+    `;
+    
     alert('Upload failed: ' + error.message);
     uploadBtn.disabled = false;
-    progressDiv.style.display = 'none';
   }
 });
 </script>

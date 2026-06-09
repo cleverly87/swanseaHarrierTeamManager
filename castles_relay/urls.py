@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from relay.admin import sync_cloudinary_media
 
 urlpatterns = [
+    path('admin/relay/mediaupload/sync/', sync_cloudinary_media, name='sync_cloudinary'),
     path('admin/', admin.site.urls),
     path('', include('relay.urls')),
 ]

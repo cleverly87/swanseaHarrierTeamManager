@@ -84,12 +84,12 @@ def gallery_view(request):
     """Photo and video gallery from the event."""
     from .models import MediaUpload
     
-    # Get all media uploads - let Cloudinary handle the file type
+    # Get all media uploads
     all_media = MediaUpload.objects.all().order_by('display_order', '-uploaded_at')
     
-    # Separate into photos and videos based on the folder path
-    photos = [m for m in all_media if '/photos/' in m.file.name]
-    videos = [m for m in all_media if '/videos/' in m.file.name]
+    # Separate into photos and videos using the media_type field
+    photos = [m for m in all_media if m.media_type == 'image']
+    videos = [m for m in all_media if m.media_type == 'video']
     
     context = {
         'photos': photos,
@@ -182,15 +182,24 @@ def save_cloudinary_upload(request):
     from .models import MediaUpload
     from django.core.files.base import ContentFile
     import json
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    
+    # Note: This view is intentionally NOT decorated with @csrf_exempt
+    # because we want CSRF protection, but we'll handle the token properly
     
     if request.method != 'POST':
+        logger.warning(f"save_cloudinary_upload called with method: {request.method}")
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
     try:
+        logger.info(f"save_cloudinary_upload called. Content-Type: {request.content_type}")
         data = json.loads(request.body)
         uploads = data.get('uploads', [])
         
         print(f"DEBUG: Received {len(uploads)} uploads")
+        logger.info(f"Received {len(uploads)} uploads")
         
         if not uploads:
             return JsonResponse({'error': 'No uploads provided'}, status=400)
@@ -235,12 +244,15 @@ def save_cloudinary_upload(request):
             
             saved_count += 1
         
+        logger.info(f"Successfully saved {saved_count} uploads")
         return JsonResponse({
             'success': True,
             'message': f'{saved_count} file(s) saved successfully!'
         })
         
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {str(e)}")
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
+        logger.error(f"Save error: {str(e)}", exc_info=True)
         return JsonResponse({'error': f'Save error: {str(e)}'}, status=500)

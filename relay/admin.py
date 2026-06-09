@@ -222,6 +222,9 @@ class MediaUploadAdmin(admin.ModelAdmin):
     date_hierarchy = 'uploaded_at'
     ordering = ['display_order', '-uploaded_at']
     
+    # Add custom action for syncing with Cloudinary
+    change_list_template = 'admin/relay/mediaupload/change_list.html'
+    
     fieldsets = (
         ('Media File', {
             'fields': ('file', 'file_preview')
@@ -249,7 +252,7 @@ class MediaUploadAdmin(admin.ModelAdmin):
             if obj.is_image:
                 return format_html(
                     '<img src="{}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />',
-                    obj.file.url
+                    obj.cloudinary_url
                 )
             elif obj.is_video:
                 return mark_safe('<span style="font-size: 2rem;">🎥</span>')
@@ -266,14 +269,14 @@ class MediaUploadAdmin(admin.ModelAdmin):
             if obj.is_image:
                 return format_html(
                     '<img src="{}" style="max-width: 400px; max-height: 400px; border-radius: 8px;" />',
-                    obj.file.url
+                    obj.cloudinary_url
                 )
             elif obj.is_video:
                 return format_html(
                     '<video controls style="max-width: 400px; max-height: 400px;"><source src="{}" type="video/mp4"></video>',
-                    obj.file.url
+                    obj.cloudinary_url
                 )
-            return format_html('<a href="{}" target="_blank">View File</a>', obj.file.url)
+            return format_html('<a href="{}" target="_blank">View File</a>', obj.cloudinary_url)
         except:
             return '—'
     file_preview.short_description = 'File Preview'
@@ -305,3 +308,119 @@ class MediaUploadAdmin(admin.ModelAdmin):
         except:
             return '—'
     file_type.short_description = 'Type'
+
+
+# Custom admin view for syncing with Cloudinary
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from django.conf import settings
+import cloudinary
+import cloudinary.api
+
+# Configure cloudinary with settings
+cloudinary.config(
+    cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=settings.CLOUDINARY_STORAGE['API_SECRET']
+)
+
+
+@staff_member_required
+def sync_cloudinary_media(request):
+    """Sync media from Cloudinary to database."""
+    if request.method == 'POST':
+        try:
+            # Query Cloudinary for ALL photos (not just in specific folder)
+            print("DEBUG: Querying Cloudinary for ALL photos...")
+            photos_response = cloudinary.api.resources(
+                type='upload',
+                resource_type='image',
+                max_results=500
+            )
+            print(f"DEBUG: Found {len(photos_response.get('resources', []))} photos")
+            
+            # Query Cloudinary for ALL videos
+            print("DEBUG: Querying Cloudinary for ALL videos...")
+            videos_response = cloudinary.api.resources(
+                type='upload',
+                resource_type='video',
+                max_results=500
+            )
+            print(f"DEBUG: Found {len(videos_response.get('resources', []))} videos")
+            for video in videos_response.get('resources', []):
+                print(f"DEBUG: Video public_id: {video['public_id']}")
+            
+            # Collect all files from Cloudinary with their type
+            # Store as dict: {public_id: 'image' or 'video'}
+            cloudinary_files = {}
+            
+            # Process photos
+            for resource in photos_response.get('resources', []):
+                public_id = resource['public_id']
+                cloudinary_files[public_id] = 'image'
+            
+            # Process videos
+            for resource in videos_response.get('resources', []):
+                public_id = resource['public_id']
+                cloudinary_files[public_id] = 'video'
+            
+            print(f"DEBUG: Total files in Cloudinary: {len(cloudinary_files)}")
+            
+            # Get existing database records
+            existing_uploads = MediaUpload.objects.all()
+            existing_public_ids = set(upload.file.name for upload in existing_uploads)
+            
+            print(f"DEBUG: Total files in database: {len(existing_public_ids)}")
+            
+            # Find new files to add
+            new_public_ids = set(cloudinary_files.keys()) - existing_public_ids
+            print(f"DEBUG: New files to add: {new_public_ids}")
+            new_count = 0
+            for public_id in new_public_ids:
+                MediaUpload.objects.create(
+                    file=public_id,
+                    media_type=cloudinary_files[public_id],
+                    title='',
+                    caption=''
+                )
+                new_count += 1
+            
+            # Update media_type for existing files (in case it was wrong)
+            for upload in existing_uploads:
+                if upload.file.name in cloudinary_files:
+                    correct_type = cloudinary_files[upload.file.name]
+                    if upload.media_type != correct_type:
+                        upload.media_type = correct_type
+                        upload.save(update_fields=['media_type'])
+            
+            
+            # Find deleted files to remove
+            deleted_public_ids = existing_public_ids - set(cloudinary_files.keys())
+            print(f"DEBUG: Deleted files to remove: {deleted_public_ids}")
+            deleted_count = 0
+            for upload in existing_uploads:
+                if upload.file.name in deleted_public_ids:
+                    upload.delete()
+                    deleted_count += 1
+            
+            # Build result message
+            message_parts = []
+            if new_count > 0:
+                message_parts.append(f'Added {new_count} new file(s)')
+            if deleted_count > 0:
+                message_parts.append(f'Removed {deleted_count} deleted file(s)')
+            
+            if message_parts:
+                messages.success(request, f'Sync complete: {", ".join(message_parts)}!')
+            else:
+                messages.info(request, 'No changes needed. Database is already in sync with Cloudinary.')
+            
+            return redirect('admin:relay_mediaupload_changelist')
+            
+        except Exception as e:
+            messages.error(request, f'Sync failed: {str(e)}')
+            return redirect('admin:relay_mediaupload_changelist')
+    
+    # GET request - show confirmation page
+    return render(request, 'admin/relay/mediaupload/sync_confirm.html')
